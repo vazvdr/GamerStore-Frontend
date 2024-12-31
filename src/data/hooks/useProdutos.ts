@@ -1,5 +1,5 @@
 'use client'
-import { Produto } from '@gstore/core'
+import { Produto } from '../../regras/core'
 import { useCallback, useEffect, useState } from 'react'
 
 const urlBase = 'http://localhost:3005'
