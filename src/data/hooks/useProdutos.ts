@@ -1,5 +1,5 @@
 'use client'
-import { Produto } from '@gstore/core'
+import { Produto } from '@/regras/core/src'
 import { useCallback, useEffect, useState } from 'react'
 
 const urlBase = 'https://gamer-store-backend.vercel.app'
