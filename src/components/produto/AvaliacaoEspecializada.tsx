@@ -1,4 +1,4 @@
-import { Produto } from '@gstore/core'
+import { Produto } from '@/regras/core/src'
 
 export interface AvaliacaoEspecializadaProps {
     produto: Produto

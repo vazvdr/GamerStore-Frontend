@@ -1,5 +1,5 @@
 import { IconCreditCard, IconShoppingCart } from '@tabler/icons-react'
-import { Moeda, Produto } from '@gstore/core'
+import { Moeda, Produto } from '@/regras/core/src'
 import useParcelamento from '@/data/hooks/useParcelamento'
 
 export interface BannerCompraProps {

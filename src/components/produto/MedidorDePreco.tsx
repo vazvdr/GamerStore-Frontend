@@ -1,4 +1,4 @@
-import { Produto } from '@gstore/core'
+import { Produto } from '@/regras/core/src'
 import { IconChevronDown, IconMoodConfuzed, IconMoodHappy, IconMoodSad } from '@tabler/icons-react'
 
 export interface MedidorDePrecoProps {

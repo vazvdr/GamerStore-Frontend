@@ -1,4 +1,4 @@
-import { Produto } from '@gstore/core'
+import { Produto } from '@/regras/core/src'
 import NotaReview from '../shared/NotaReview'
 
 export interface AvaliacoesUsuariosProps {
