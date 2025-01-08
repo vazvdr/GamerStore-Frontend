@@ -9,7 +9,6 @@
         "lint": "next lint"
     },
     "dependencies": {
-        "@gstore/core": "*",
         "@radix-ui/react-slot": "^1.1.0",
         "@tabler/icons-react": "^3.19.0",
         "class-variance-authority": "^0.7.1",
