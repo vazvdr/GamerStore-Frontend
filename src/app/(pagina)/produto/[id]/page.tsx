@@ -1,5 +1,5 @@
 'use client'
-import { Produto } from '@/regras/core/src'
+import { Produto } from '@gstore/core'
 import useProdutos from '@/data/hooks/useProdutos'
 import { useEffect, useState } from 'react'
 import TituloProduto from '@/components/produto/TituloProduto'

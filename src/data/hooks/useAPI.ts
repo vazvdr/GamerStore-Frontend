@@ -1,6 +1,6 @@
 "use client";
 
-const API_BASE_URL = "https://localhost:3005";
+const API_BASE_URL = process.env.URL_BASE;
 
 export const useAPI = () => {
   const login = async (email: string, password: string): Promise<string | null> => {

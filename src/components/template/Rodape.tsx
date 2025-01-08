@@ -5,7 +5,7 @@ import {
     IconBrandWhatsapp,
     IconBrandYoutube,
 } from '@tabler/icons-react'
-import LogoRodape from '../shared/LogoRodape'
+import Logo from '../shared/Logo'
 
 export default function Rodape() {
     return (
@@ -13,7 +13,7 @@ export default function Rodape() {
             <div className="h-px bg-gradient-to-r from-violet-600/20 via-violet-600/80 to-violet-600/20"></div>
             <div className="container flex flex-col py-10 gap-10">
                 <div className="flex flex-col md:flex-row items-center md:items-start justify-between text-center md:text-left gap-5 md:gap-0">
-                    <LogoRodape />
+                    <Logo />
                     <div className="flex flex-col gap-1">
                         <span className="text-2xl font-bold text-zinc-200 pb-2">Sobre</span>
                         <span className="text-sm">Nossa História</span>

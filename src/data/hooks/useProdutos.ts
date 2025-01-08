@@ -1,8 +1,8 @@
 'use client'
-import { Produto } from '../../regras/core'
+import { Produto } from '@gstore/core'
 import { useCallback, useEffect, useState } from 'react'
 
-const urlBase = 'http://localhost:3005'
+const urlBase = 'https://gamer-store-backend.vercel.app'
 
 export default function useProdutos() {
     const [produtos, setProdutos] = useState<Produto[]>([])
