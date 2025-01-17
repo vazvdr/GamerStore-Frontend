@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react'
 import ProdutoItem from '@/components/produto/ProdutoItem'
 import useProdutos from '@/data/hooks/useProdutos'
 import { IconArrowNarrowUp } from '@tabler/icons-react'
-import { ProvedorSessao } from '@/data/contexts/ContextoSessao'
-import { ProvedorUsuario } from '@/data/contexts/ContextoUsuario'
 
 export default function Inicio() {
     const { produtos } = useProdutos()
@@ -25,8 +23,6 @@ export default function Inicio() {
     }
 
     return (
-        <ProvedorSessao>
-            <ProvedorUsuario>
                 <div className="container mx-auto px-4 py-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
                     {produtos.map((produto) => (
                         <ProdutoItem key={produto.id} produto={produto} />
@@ -41,7 +37,5 @@ export default function Inicio() {
                         </button>
                     )}
                 </div>
-            </ProvedorUsuario>
-        </ProvedorSessao>
     )
 }
