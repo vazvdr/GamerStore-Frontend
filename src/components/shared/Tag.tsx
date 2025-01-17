@@ -13,7 +13,7 @@ export default function Tag(props: TagProps) {
                 ${
                     props.outlined
                         ? 'border border-violet-500 text-white'
-                        : 'bg-gradient-to-r from-violet-700 to-violet-700'
+                        : 'bg-gradient-to-r from-purple-700 to-violet-700'
                 }
                 
             `}

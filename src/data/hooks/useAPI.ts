@@ -1,51 +1,42 @@
-"use client";
+'use client';
+import { useCallback } from 'react';
+import useSessao from './useSessao';
 
-const API_BASE_URL = process.env.URL_BASE;
+const URL_BASE = process.env.URL_BASE;
 
-export const useAPI = () => {
-  const login = async (email: string, password: string): Promise<string | null> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+export function useAPI() {
+    const { token } = useSessao();
+
+    const httpRequest = useCallback(
+        async (method: string, uri: string, body?: any): Promise<any> => {
+            const path = uri.startsWith('/') ? uri : `/${uri}`;
+            try {
+                const response = await fetch(`${URL_BASE}${path}`, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: token ? `Bearer ${token}` : '',
+                    },
+                    body: body ? JSON.stringify(body) : undefined,
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || 'Erro desconhecido');
+                }
+
+                return response.json();
+            } catch (error) {
+                console.error(`Erro na requisição ${method} ${path}:`, error);
+                throw error;
+            }
         },
-        body: JSON.stringify({ email, password }),
-      });
+        [token]
+    );
 
-      if (!response.ok) {
-        throw new Error("Erro ao tentar fazer login. Verifique suas credenciais.");
-      }
-
-      const data = await response.json();
-      return data.token;
-    } catch (error) {
-      console.error("Erro no login:", error);
-      return null;
-    }
-  };
-
-  const register = async (name: string, email: string, password: string): Promise<string | null> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Erro ao tentar se cadastrar.");
-      }
-
-      const data = await response.json();
-      return data.token;
-    } catch (error) {
-      console.error("Erro no cadastro:", error);
-      return null;
-    }
-  };
-
-  return { login, register };
-};
+    return {
+        httpGet: (uri: string) => httpRequest('GET', uri),
+        httpPost: (uri: string, body: any) => httpRequest('POST', uri, body),
+        httpDelete: (uri: string) => httpRequest('DELETE', uri),
+    };
+}

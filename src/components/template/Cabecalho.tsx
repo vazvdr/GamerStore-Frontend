@@ -3,26 +3,40 @@ import IconeCarrinho from '../shared/IconeCarrinho'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Input } from '../ui/input'
+import { Search } from 'lucide-react'
 
 export default function Cabecalho() {
     return (
-        <div
-            className="flex flex-col h-20"
-            style={{
-                background: 'linear-gradient(90deg, #000000 0%, #4B0082 100%)',
-            }}
-        >
-            <div className="flex-1 container flex items-center justify-between">
-                <Logo />
-                <Input className="w-1/3 mx-auto" placeholder="Pesquisar produtos, categorias..." />
-                <div className="flex items-center gap-2">
-                <Link href="/login"><Button className="bg-white text-black">Entrar</Button></Link>
+        <div className="flex flex-col h-20 bg-black">
+            <div className="flex-1 container flex items-center justify-between px-4 sm:px-6 lg:px-8">
+                {/* Logo */}
+                <div className="mr-2 sm:mr-4">
+                    <Logo />
+                </div>
+
+                {/* Barra de Pesquisa */}
+                <div className="flex items-center gap-1 w-[60%] mx-auto mr-4">
+                    <Input placeholder="Pesquisar produtos, categorias..." />
+                    <Button
+                        className="bg-white text-black hover:bg-purple-700 p-2"
+                        aria-label="Pesquisar"
+                    >
+                        <Search size={20} />
+                    </Button>
+                </div>
+
+                {/* Botões à Direita */}
+                <div className="flex items-center ">
+                    <Link href="/login">
+                        <Button className="bg-white text-black hover:bg-purple-500">Entrar</Button>
+                    </Link>
                     <Link href="/carrinho">
                         <IconeCarrinho qtdeItens={0} />
                     </Link>
                 </div>
+
             </div>
-            <div className="h-px bg-gradient-to-r from-violet-600/20 via-violet-600/80 to-violet-600/20"></div>
+            <div className="h-px bg-gradient-to-r from-purple-600/20 via-violet-600/80 to-violet-600/20"></div>
         </div>
     )
 }

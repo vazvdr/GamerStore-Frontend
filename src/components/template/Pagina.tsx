@@ -13,14 +13,10 @@ export interface PaginaProps {
 export default function Pagina(props: PaginaProps) {
     return (
         <div
-            className="flex flex-col min-h-screen text-white"
-            style={{
-                background: 'radial-gradient(50% 50% at 50% 50%, #000 0%, #0d001c 100%)',
-            }}
+            className="flex flex-col min-h-screen text-white bg-black"
         >
             <div
                 className="flex-1 flex flex-col w-screen"
-                style={{ background: 'url("/background.png")' }}
             >
                 {props.semCabecalho ? null : <Cabecalho />}
                 <main
