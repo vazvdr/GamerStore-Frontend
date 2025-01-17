@@ -44,6 +44,12 @@ const LoginPage = () => {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Seu nome"
                 className="w-full border border-gray-500 rounded px-3 py-2 mt-1 bg-transparent text-white"
+                style={{
+                  background: 'transparent',
+                  border: '2px solid transparent',
+                  borderImage: 'linear-gradient(45deg, #7e22ce, #3b82f6, #7e22ce) 1',
+                  borderImageSlice: 1,
+                }}
               />
             </div>
           )}
@@ -56,6 +62,12 @@ const LoginPage = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Seu email"
               className="w-full border border-gray-500 rounded px-3 py-2 mt-1 bg-transparent text-white"
+              style={{
+                background: 'transparent',
+                border: '2px solid transparent',
+                borderImage: 'linear-gradient(45deg, #7e22ce, #3b82f6, #7e22ce) 1',
+                borderImageSlice: 1,
+              }}
             />
           </div>
 
@@ -67,10 +79,16 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Sua senha"
               className="w-full border border-gray-500 rounded px-3 py-2 mt-1 bg-transparent text-white"
+              style={{
+                background: 'transparent',
+                border: '2px solid transparent',
+                borderImage: 'linear-gradient(45deg, #7e22ce, #3b82f6, #7e22ce) 1',
+                borderImageSlice: 1,
+              }}
             />
             {/* Link "Esqueceu sua senha?" */}
             {isLogin && (
-              <p className="text-sm text-blue-400 cursor-pointer absolute right-0 mt-1">
+              <p className="text-sm text-white cursor-pointer absolute right-0 mt-1">
                 Esqueceu sua senha?
               </p>
             )}
