@@ -19,15 +19,17 @@ export default function PaginaProduto(props: any) {
     }, [props.params.id, obterProdutoPorId])
 
     return produto ? (
-        <div className="flex flex-col gap-20">
-            <div className="flex flex-col gap-10">
+        <div className="flex flex-col w-[100%] items-center gap-1 px-1 md:px-20 lg:px-10">
+            <div className="w-full flex flex-col gap-8">
                 <TituloProduto produto={produto} />
                 <InformacoesProduto produto={produto} />
                 <BannerCompra produto={produto} />
                 <MedidorDePreco produto={produto} />
             </div>
-            <AvaliacoesUsuarios produto={produto} />
-            <AvaliacaoEspecializada produto={produto} />
+            <div className="w-full max-w-screen flex flex-col gap-8">
+                <AvaliacoesUsuarios produto={produto} />
+                <AvaliacaoEspecializada produto={produto} />
+            </div>
         </div>
     ) : (
         <ProdutoNaoEncontrado />

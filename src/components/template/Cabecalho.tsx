@@ -16,9 +16,13 @@ export default function Cabecalho() {
 
                 {/* Barra de Pesquisa */}
                 <div className="flex items-center gap-1 w-[60%] mx-auto mr-4">
-                    <Input placeholder="Pesquisar produtos, categorias..." />
+                    <Input placeholder="Pesquisar produtos, categorias..." 
+                    className="text-black hover:bg-black 
+                    hover:text-white hover:border border-purple-800 p-2"
+                    />
                     <Button
-                        className="bg-white text-black hover:bg-purple-700 p-2"
+                        className="bg-white text-black hover:bg-black 
+                        hover:text-white border border-purple-800 p-2"
                         aria-label="Pesquisar"
                     >
                         <Search size={20} />
@@ -28,7 +32,8 @@ export default function Cabecalho() {
                 {/* Botões à Direita */}
                 <div className="flex items-center ">
                     <Link href="/login">
-                        <Button className="bg-white text-black hover:bg-purple-500">Entrar</Button>
+                        <Button className="bg-white text-black hover:bg-black 
+                        hover:text-white hover:border border-purple-800">Entrar</Button>
                     </Link>
                     <Link href="/carrinho">
                         <IconeCarrinho qtdeItens={0} />

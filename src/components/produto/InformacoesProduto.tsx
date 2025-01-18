@@ -9,8 +9,10 @@ export interface InformacoesProdutoProps {
 export default function InformacoesProduto(props: InformacoesProdutoProps) {
     const { produto } = props
     return (
-        <div className="flex items-center bg-violet-dark rounded-xl p-5">
-            <div className="flex-1 relative flex justify-center h-96">
+        <div className="flex flex-col md:flex-row md:w-[100%] lg:flex-row lg:w-[100%] bg-violet-dark rounded-xl w-full">
+            {/* Imagem do Produto */}
+            <div className="relative h-96 w-[100%] md:w-[70%] 
+            lg:w-[90%]">
                 <Image
                     src={produto.imagem!}
                     fill
@@ -18,7 +20,11 @@ export default function InformacoesProduto(props: InformacoesProdutoProps) {
                     alt="Imagem do Produto"
                 />
             </div>
-            <Especificacoes produto={produto} />
+
+            {/* Especificações */}
+            <div className="w-[100%] md:w-[100%] md:max-w-[100%] lg:w-[90%] break-words">
+                <Especificacoes produto={produto} />
+            </div>
         </div>
     )
 }

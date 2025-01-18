@@ -98,7 +98,7 @@ const LoginPage = () => {
 
           <button
             type="submit"
-            className="w-full text-white px-4 py-2 rounded mt-5 hover:bg-purple-900"
+            className="w-full text-white px-4 py-2 rounded mt-5 hover:bg-red-200"
             style={{
               background: 'transparent',
               border: '2px solid transparent',
