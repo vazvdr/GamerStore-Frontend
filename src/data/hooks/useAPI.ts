@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import useSessao from './useSessao'
 
-const URL_BASE = 'https://gamer-store-backend.vercel.app/'
+const URL_BASE = 'https://gamer-store-backend.vercel.app'
 
 export default function useAPI() {
     const { token } = useSessao()
