@@ -7,7 +7,7 @@ import { Search } from 'lucide-react'
 
 export default function Cabecalho() {
     return (
-        <div className="flex flex-col h-20 bg-black">
+        <div className="flex flex-col h-20 bg-black fixed top-0 w-full z-50">
             <div className="flex-1 container flex items-center justify-between px-4 sm:px-6 lg:px-8">
                 {/* Logo */}
                 <div className="mr-2 sm:mr-4">

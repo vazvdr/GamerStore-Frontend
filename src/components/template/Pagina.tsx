@@ -13,7 +13,7 @@ export interface PaginaProps {
 export default function Pagina(props: PaginaProps) {
     return (
         <div
-            className="flex flex-col min-h-screen text-white bg-black"
+            className="flex flex-col min-h-screen text-white bg-black mt-10"
         >
             <div
                 className="flex-1 flex flex-col w-screen"
