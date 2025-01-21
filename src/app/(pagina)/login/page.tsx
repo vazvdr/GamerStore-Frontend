@@ -17,7 +17,6 @@ const LoginPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Este useEffect pode ser usado futuramente para monitorar mudanças no token ou estado da sessão
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,7 +32,7 @@ const LoginPage = () => {
     try {
       if (isLogin) {
         // Requisição de login
-        const token = await httpPost('/usuario/login', { email, password });
+        const token = await httpPost('/usuario/login', { email, senha: password });
         console.log("Token recebido:", token);
         criarSessao(token); // Cria a sessão com o token
         router.push('/'); // Redireciona para a página inicial
