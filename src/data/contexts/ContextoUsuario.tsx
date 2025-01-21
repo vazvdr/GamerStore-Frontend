@@ -27,9 +27,13 @@ export function ProvedorUsuario({ children }: any) {
 
     // Função de login
     async function entrar(usuario: Partial<Usuario>) {
-        const token = await httpPost('/usuario/login', usuario)
-        criarSessao(token) // Armazena o token
-    }
+        const response = await httpPost('/usuario/login', usuario)
+        console.log('Resposta do login:', response)
+        if (!response || !response.token) {
+            throw new Error('Token não encontrado na resposta do servidor.')
+        }
+        criarSessao(response.token) // Armazena o token
+    }    
 
     // Função de registrar
     async function registrar(usuario: Usuario) {
