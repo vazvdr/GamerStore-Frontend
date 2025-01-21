@@ -16,6 +16,12 @@ const LoginPage = () => {
   const { httpPost } = useAPI();
   const router = useRouter();
 
+  useEffect(() => {
+    // Redireciona o usuário logado para a página inicial
+    const token = localStorage.getItem('token');
+    if (token) router.push('/');
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -29,13 +35,12 @@ const LoginPage = () => {
     try {
       if (isLogin) {
         // Requisição de login
-        const token = await httpPost('/usuario/login', { email, senha: senha });
-        console.log("Token recebido:", token);
+        const token = await httpPost('/usuario/login', { email, senha });
         criarSessao(token); // Cria a sessão com o token
         router.push('/'); // Redireciona para a página inicial
       } else {
         // Requisição de cadastro
-        await httpPost('/usuario/registrar', { email, senha, name });
+        await httpPost('/usuario/registrar', { email, senha, nome: name });
         alert("Cadastro realizado com sucesso! Faça login.");
         setIsLogin(true); // Alterna para a tela de login
       }
@@ -47,7 +52,8 @@ const LoginPage = () => {
 
   return (
     <div className="bg-black mt-6 p-6 rounded-lg shadow-lg w-80 m-auto relative">
-      <div className="absolute inset-0 rounded-lg border-2"
+      <div
+        className="absolute inset-0 rounded-lg border-2"
         style={{
           borderImage: 'linear-gradient(45deg, #6b21a8, #3b82f6, #6b21a8) 1',
           borderImageSlice: 1,
@@ -107,11 +113,6 @@ const LoginPage = () => {
                 borderImageSlice: 1,
               }}
             />
-            {isLogin && (
-              <p className="text-sm text-white cursor-pointer absolute right-0 mt-1">
-                Esqueceu sua senha?
-              </p>
-            )}
           </div>
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           <button
