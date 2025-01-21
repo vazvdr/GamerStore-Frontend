@@ -54,15 +54,16 @@ export function ProvedorSessao(props: any) {
     function obterEstado(): { token: string; usuario: Usuario } | null {
         const jwt = cookie.get(nomeCookie)
         if (!jwt) return null
-
+    
         try {
             const decoded: any = jwtDecode(jwt)
+            console.log('Token decodificado:', decoded) // Adiciona este log para verificar o conteúdo do token
             const expired = decoded.exp < Date.now() / 1000
             if (expired) {
                 cookie.remove(nomeCookie)
                 return null
             }
-
+    
             return {
                 token: jwt,
                 usuario: {
@@ -72,6 +73,7 @@ export function ProvedorSessao(props: any) {
                 },
             }
         } catch (error) {
+            console.error('Erro ao decodificar o token:', error)
             cookie.remove(nomeCookie)
             return null
         }
