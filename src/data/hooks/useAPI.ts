@@ -25,21 +25,19 @@ export default function useAPI() {
         [token]
     );
 
-    const httpPost = useCallback(
-        async function (uri: string, body: any): Promise<any> {
-            const path = uri.startsWith('/') ? uri : `/${uri}`
-            const resp = await fetch(`${URL_BASE}${path}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(body),
-            })
-            return extrairDados(resp)
-        },
-        [token]
-    )
+    async function httpPost(uri: string, body: any): Promise<any> {
+        const path = uri.startsWith('/') ? uri : `/${uri}`
+        const resp = await fetch(`${URL_BASE}${path}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify(body),
+        })
+        console.log('Resposta do POST:', resp)
+        return extrairDados(resp)
+    }
 
     async function httpPut(url: string, data: any, config?: RequestInit): Promise<any> {
         const response = await fetch(url, {
@@ -52,13 +50,13 @@ export default function useAPI() {
             body: JSON.stringify(data),
             ...config,
         });
-    
+
         if (!response.ok) {
             throw new Error(`Erro: ${response.statusText}`);
         }
-    
+
         return await response.json();  // Espera a resposta como JSON
-    }    
+    }
 
     const httpDelete = useCallback(
         async function (uri: string): Promise<any> {
