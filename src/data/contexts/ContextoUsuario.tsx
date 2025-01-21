@@ -8,7 +8,7 @@ import useAPI from '../hooks/useAPI'
 export interface ContextoUsuarioProps {
     carregando: boolean
     usuario: Usuario | null
-    token: string | null // Adicione o token aqui
+    token: string | null
     entrar: (usuario: Partial<Usuario>) => Promise<void>
     registrar: (usuario: Usuario) => Promise<void>
     alterar: (usuario: Usuario) => Promise<void>
@@ -27,13 +27,9 @@ export function ProvedorUsuario({ children }: any) {
 
     // Função de login
     async function entrar(usuario: Partial<Usuario>) {
-        const response = await httpPost('/usuario/login', usuario)
-        console.log('Resposta do login:', response)
-        if (!response || !response.token) {
-            throw new Error('Token não encontrado na resposta do servidor.')
-        }
-        criarSessao(response.token) // Armazena o token
-    }    
+        const token = await httpPost('/usuario/login', usuario)
+        criarSessao(token) // Armazena o token
+    }
 
     // Função de registrar
     async function registrar(usuario: Usuario) {

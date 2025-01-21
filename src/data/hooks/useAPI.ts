@@ -25,38 +25,40 @@ export default function useAPI() {
         [token]
     );
 
-    async function httpPost(uri: string, body: any): Promise<any> {
-        const path = uri.startsWith('/') ? uri : `/${uri}`
-        const resp = await fetch(`${URL_BASE}${path}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify(body),
-        })
-        console.log('Resposta do POST:', resp)
-        return extrairDados(resp)
-    }
+    const httpPost = useCallback(
+        async function (uri: string, body: any): Promise<any> {
+            const path = uri.startsWith('/') ? uri : `/${uri}`
+            const resp = await fetch(`${URL_BASE}${path}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(body),
+            })
+            return extrairDados(resp)
+        },
+        [token]
+    )
 
     async function httpPut(url: string, data: any, config?: RequestInit): Promise<any> {
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,  // Inclui o token no cabeçalho
+                Authorization: `Bearer ${token}`, 
                 ...(config?.headers || {}),
             },
             body: JSON.stringify(data),
             ...config,
         });
-
+    
         if (!response.ok) {
             throw new Error(`Erro: ${response.statusText}`);
         }
-
-        return await response.json();  // Espera a resposta como JSON
-    }
+    
+        return await response.json(); 
+    }    
 
     const httpDelete = useCallback(
         async function (uri: string): Promise<any> {
@@ -77,7 +79,6 @@ export default function useAPI() {
         let conteudo = ''
         try {
             conteudo = await resp.text()
-            console.log('Resposta', conteudo)
             return JSON.parse(conteudo)
         } catch (e) {
             return conteudo

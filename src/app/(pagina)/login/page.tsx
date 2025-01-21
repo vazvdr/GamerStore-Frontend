@@ -16,9 +16,6 @@ const LoginPage = () => {
   const { httpPost } = useAPI();
   const router = useRouter();
 
-  useEffect(() => {
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
