@@ -32,8 +32,7 @@ const LoginPage = () => {
     try {
       if (isLogin) {
         // Requisição de login
-        const response = await httpPost('/usuario/login', { email, senha: senha });
-        const token = response.token
+        const token = await httpPost('/usuario/login', { email, senha: senha });
         console.log("Token recebido:", token);
         criarSessao(token); // Cria a sessão com o token
         router.push('/'); // Redireciona para a página inicial
