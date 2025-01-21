@@ -8,7 +8,7 @@ import useAPI from '../../../data/hooks/useAPI';
 const LoginPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [senha, setSenha] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +24,7 @@ const LoginPage = () => {
     setError(null);
 
     // Validação de campos
-    if (!email || !password || (!isLogin && !name)) {
+    if (!email || !senha || (!isLogin && !name)) {
       setError("Por favor, preencha todos os campos.");
       return;
     }
@@ -32,13 +32,14 @@ const LoginPage = () => {
     try {
       if (isLogin) {
         // Requisição de login
-        const token = await httpPost('/usuario/login', { email, senha: password });
+        const response = await httpPost('/usuario/login', { email, senha });
+        const token = response.token; // Acessa o token da resposta
         console.log("Token recebido:", token);
         criarSessao(token); // Cria a sessão com o token
         router.push('/'); // Redireciona para a página inicial
       } else {
         // Requisição de cadastro
-        await httpPost('/usuario/registrar', { email, password, name });
+        await httpPost('/usuario/registrar', { email, senha, name });
         alert("Cadastro realizado com sucesso! Faça login.");
         setIsLogin(true); // Alterna para a tela de login
       }
@@ -99,8 +100,8 @@ const LoginPage = () => {
             <label className="block text-sm font-medium text-white">Senha</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
               placeholder="Sua senha"
               className="w-full border border-gray-500 rounded px-3 py-2 mt-1 bg-transparent text-white"
               style={{

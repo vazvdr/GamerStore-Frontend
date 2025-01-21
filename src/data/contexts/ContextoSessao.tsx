@@ -69,7 +69,6 @@ export function ProvedorSessao(props: any) {
                     id: decoded.id,
                     nome: decoded.nome,
                     email: decoded.email,
-                    barbeiro: decoded.barbeiro,
                 },
             }
         } catch (error) {

@@ -16,7 +16,7 @@ export default class RegistrarUsuario {
           
           const senhaCriptografada = await this.cripto.criptografar(usuario.senha);
           
-        const novoUsuario: Usuario = { ...usuario, senha: senhaCriptografada, barbeiro: false }
+        const novoUsuario: Usuario = { ...usuario, senha: senhaCriptografada }
         await this.repo.salvar(novoUsuario)
     }
 }
