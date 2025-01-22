@@ -27,8 +27,11 @@ export function ProvedorUsuario({ children }: any) {
 
     // Função de login
     async function entrar(usuario: Partial<Usuario>) {
-        const token = await httpPost('/usuario/login', usuario)
-        criarSessao(token) // Armazena o token
+        console.log('Iniciando processo de login:', usuario);
+        const token = await httpPost('/usuario/login', usuario);
+        console.log('Token recebido no login:', token);
+        criarSessao(token); // Armazena o token
+        console.log('Sessão criada com sucesso');
     }
 
     // Função de registrar

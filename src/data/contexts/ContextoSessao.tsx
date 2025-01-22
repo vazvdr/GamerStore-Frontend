@@ -22,27 +22,31 @@ export function ProvedorSessao(props: any) {
     const [usuario, setUsuario] = useState<Usuario | null>(null)
 
     const carregarSessao = useCallback(function () {
+        console.log('Carregando sessão do usuário');
         try {
-            setCarregando(true)
-            const estado = obterEstado()
-            setToken(estado?.token ?? null)
-            setUsuario(estado?.usuario ?? null)
+            setCarregando(true);
+            const estado = obterEstado();
+            console.log('Estado carregado:', estado);
+            setToken(estado?.token ?? null);
+            setUsuario(estado?.usuario ?? null);
         } finally {
-            setCarregando(false)
+            setCarregando(false);
+            console.log('Sessão carregada com sucesso');
         }
-    }, [])
+    }, []);
 
     useEffect(() => {
         carregarSessao()
     }, [carregarSessao])
 
     function criarSessao(jwt: string) {
+        console.log('Criando nova sessão com JWT:', jwt);
         cookie.set(nomeCookie, jwt, {
             expires: 1,
             sameSite: 'None',
             secure: true,
-        })
-        carregarSessao()
+        });
+        carregarSessao();
     }
 
     function limparSessao() {

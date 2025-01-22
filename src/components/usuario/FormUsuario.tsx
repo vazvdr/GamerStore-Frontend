@@ -2,8 +2,6 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import useUsuario from '@/data/hooks/useUsuario'
-import Logo from '@/components/shared/Logo'
-import Image from 'next/image'
 
 export default function FormUsuario() {
     const [modo, setModo] = useState<'entrar' | 'cadastrar'>('entrar')
@@ -39,7 +37,6 @@ export default function FormUsuario() {
         if (modo === 'cadastrar') {
             if (!nome.trim()) novosErros.nome = 'O nome é obrigatório.'
         }
-
         if (!email.trim()) novosErros.email = 'O e-mail é obrigatório.'
         if (!senha.trim()) novosErros.senha = 'A senha é obrigatória.'
 
@@ -48,14 +45,23 @@ export default function FormUsuario() {
     }
 
     async function submeter() {
-        if (!validarFormulario()) return
-
-        if (modo === 'entrar') {
-            await entrar({ email, senha })
-        } else {
-            await registrar({ nome, email, senha })
+        console.log('Submissão iniciada, modo:', modo);
+        if (!validarFormulario()) {
+            console.warn('Validação do formulário falhou:', erros);
+            return;
         }
-        limparFormulario()
+    
+        if (modo === 'entrar') {
+            console.log('Tentando fazer login com:', { email, senha });
+            await entrar({ email, senha });
+            console.log('Login concluído');
+        } else {
+            console.log('Tentando registrar com:', { nome, email, senha });
+            await registrar({ nome, email, senha });
+            console.log('Registro concluído');
+        }
+        limparFormulario();
+        console.log('Formulário limpo após submissão');
     }
 
     function limparFormulario() {

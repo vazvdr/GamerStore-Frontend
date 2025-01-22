@@ -27,7 +27,8 @@ export default function useAPI() {
 
     const httpPost = useCallback(
         async function (uri: string, body: any): Promise<any> {
-            const path = uri.startsWith('/') ? uri : `/${uri}`
+            const path = uri.startsWith('/') ? uri : `/${uri}`;
+            console.log(`Fazendo POST para ${path} com body:`, body);
             const resp = await fetch(`${URL_BASE}${path}`, {
                 method: 'POST',
                 headers: {
@@ -35,11 +36,13 @@ export default function useAPI() {
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(body),
-            })
-            return extrairDados(resp)
+            });
+            const data = await extrairDados(resp);
+            console.log(`Resposta recebida no POST para ${path}:`, data);
+            return data;
         },
         [token]
-    )
+    );
 
     async function httpPut(url: string, data: any, config?: RequestInit): Promise<any> {
         const response = await fetch(url, {
@@ -76,13 +79,19 @@ export default function useAPI() {
     )
 
     async function extrairDados(resp: Response) {
-        let conteudo = ''
+        console.log('Extraindo dados da resposta:', resp);
+        let conteudo = null;
         try {
-            conteudo = await resp.text()
-            return JSON.parse(conteudo)
-        } catch (e) {
-            return conteudo
+            conteudo = await resp.json();
+        } catch (error) {
+            console.error('Erro ao extrair JSON da resposta:', error);
         }
+        if (!resp.ok) {
+            console.error('Erro na resposta:', conteudo);
+            throw new Error(conteudo?.message || 'Erro desconhecido');
+        }
+        console.log('Dados extraídos com sucesso:', conteudo);
+        return conteudo;
     }
 
     return { httpGet, httpPost, httpPut, httpDelete }
