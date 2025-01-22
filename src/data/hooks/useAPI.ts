@@ -6,13 +6,19 @@ const URL_BASE = 'https://gamer-store-backend.vercel.app';
 const useAPI = () => {
   const { token } = useSessao(); 
 
-  const extrairDados = async (resp: Response): Promise<any> => {
+  function extrairDados(resp: Response): Promise<any> {
     if (!resp.ok) {
-      const errorData = await resp.json();
-      throw new Error(errorData.message || 'Erro desconhecido');
+        throw new Error(`Erro na requisição: ${resp.status}`);
     }
-    return resp.json();
-  };
+
+    const contentType = resp.headers.get('Content-Type');
+    
+    if (contentType && contentType.includes('application/json')) {
+        return resp.json();
+    }
+
+    return resp.text();
+}
 
   const httpPost = useCallback(
     async (uri: string, body: any): Promise<any> => {
