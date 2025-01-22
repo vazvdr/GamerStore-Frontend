@@ -52,11 +52,11 @@ export default function FormUsuario() {
         }
     
         if (modo === 'entrar') {
-            console.log('Tentando fazer login com:', { email, senha });
+            console.log('Tentando fazer login com:', { email });
             await entrar({ email, senha });
             console.log('Login concluído');
         } else {
-            console.log('Tentando registrar com:', { nome, email, senha });
+            console.log('Tentando registrar com:', { email });
             await registrar({ nome, email, senha });
             console.log('Registro concluído');
         }
