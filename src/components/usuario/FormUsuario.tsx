@@ -1,7 +1,7 @@
 'use client'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import useUsuario from '@/data/hooks/useUsuario'
+import { useContext, useEffect, useState } from 'react'
+import ContextoUsuario from '@/data/contexts/ContextoUsuario'
 
 export default function FormUsuario() {
     const [modo, setModo] = useState<'entrar' | 'cadastrar'>('entrar')
@@ -15,7 +15,7 @@ export default function FormUsuario() {
         senha: '',
     })
 
-    const { usuario, entrar, registrar } = useUsuario()
+    const { usuario, entrar, registrar } = useContext(ContextoUsuario)
 
     const params = useSearchParams()
     const router = useRouter()
