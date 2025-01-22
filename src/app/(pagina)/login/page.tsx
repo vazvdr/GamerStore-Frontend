@@ -22,16 +22,16 @@ const LoginPage = () => {
     if (token) router.push('/');
   }, [router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-
+  
     // Validação de campos
     if (!email || !senha || (!isLogin && !name)) {
       setError("Por favor, preencha todos os campos.");
       return;
     }
-
+  
     try {
       if (isLogin) {
         // Requisição de login
@@ -48,7 +48,7 @@ const LoginPage = () => {
       console.error("Erro durante a autenticação:", err);
       setError("Erro ao realizar a operação. Verifique os dados e tente novamente.");
     }
-  };
+  }  
 
   return (
     <div className="bg-black mt-6 p-6 rounded-lg shadow-lg w-80 m-auto relative">
