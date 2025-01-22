@@ -15,7 +15,7 @@ interface ContextoSessaoProps {
 const ContextoSessao = createContext<ContextoSessaoProps>({} as any)
 
 export function ProvedorSessao(props: any) {
-    const nomeCookie = 'gamer-authorization'
+    const nomeCookie = 'barba-authorization'
 
     const [carregando, setCarregando] = useState(true)
     const [token, setToken] = useState<string | null>(null)

@@ -3,86 +3,87 @@ import useSessao from './useSessao';
 
 const URL_BASE = 'https://gamer-store-backend.vercel.app';
 
-const useAPI = () => {
-  const { token } = useSessao(); 
+export default function useAPI() {
+    const { token } = useSessao()
 
-  function extrairDados(resp: Response): Promise<any> {
-    if (!resp.ok) {
-        throw new Error(`Erro na requisição: ${resp.status}`);
-    }
+    const httpGet = useCallback(
+        async function (uri: string): Promise<any> {
+            const path = uri.startsWith('/') ? uri : `/${uri}`;
 
-    const contentType = resp.headers.get('Content-Type');
+            try {
+                const resp = await fetch(`${URL_BASE}${path}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                return await extrairDados(resp);
+            } catch (error) {
+                console.error(`Erro ao fazer GET em ${path}:`, error);
+                throw error;
+            }
+        },
+        [token]
+    );
+
+    const httpPost = useCallback(
+        async function (uri: string, body: any): Promise<any> {
+            const path = uri.startsWith('/') ? uri : `/${uri}`
+            const resp = await fetch(`${URL_BASE}${path}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(body),
+            })
+            return extrairDados(resp)
+        },
+        [token]
+    )
+
+    async function httpPut(url: string, data: any, config?: RequestInit): Promise<any> {
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,  // Inclui o token no cabeçalho
+                ...(config?.headers || {}),
+            },
+            body: JSON.stringify(data),
+            ...config,
+        });
     
-    if (contentType && contentType.includes('application/json')) {
-        return resp.json();
+        if (!response.ok) {
+            throw new Error(`Erro: ${response.statusText}`);
+        }
+    
+        return await response.json();  // Espera a resposta como JSON
+    }    
+
+    const httpDelete = useCallback(
+        async function (uri: string): Promise<any> {
+            const path = uri.startsWith('/') ? uri : `/${uri}`
+            const resp = await fetch(`${URL_BASE}${path}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            return extrairDados(resp)
+        },
+        [token]
+    )
+
+    async function extrairDados(resp: Response) {
+        let conteudo = ''
+        try {
+            conteudo = await resp.text()
+            return JSON.parse(conteudo)
+        } catch (e) {
+            return conteudo
+        }
     }
 
-    return resp.text();
+    return { httpGet, httpPost, httpPut, httpDelete }
 }
-
-  const httpPost = useCallback(
-    async (uri: string, body: any): Promise<any> => {
-      const path = uri.startsWith('/') ? uri : `/${uri}`;
-      const resp = await fetch(`${URL_BASE}${path}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify(body),
-      });
-      return extrairDados(resp);
-    },
-    [token]
-  );
-
-  const httpGet = useCallback(
-    async (uri: string): Promise<any> => {
-      const path = uri.startsWith('/') ? uri : `/${uri}`;
-      const resp = await fetch(`${URL_BASE}${path}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      });
-      return extrairDados(resp);
-    },
-    [token]
-  );
-
-  const httpPut = useCallback(
-    async (uri: string, body: any): Promise<any> => {
-      const path = uri.startsWith('/') ? uri : `/${uri}`;
-      const resp = await fetch(`${URL_BASE}${path}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify(body),
-      });
-      return extrairDados(resp);
-    },
-    [token]
-  );
-
-  const httpDelete = useCallback(
-    async (uri: string): Promise<any> => {
-      const path = uri.startsWith('/') ? uri : `/${uri}`;
-      const resp = await fetch(`${URL_BASE}${path}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      });
-      return extrairDados(resp);
-    },
-    [token]
-  );
-
-  return { httpGet, httpPost, httpPut, httpDelete };
-};
-
-export default useAPI;

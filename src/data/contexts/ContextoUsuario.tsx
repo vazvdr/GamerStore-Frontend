@@ -8,9 +8,10 @@ import useAPI from '../hooks/useAPI'
 export interface ContextoUsuarioProps {
     carregando: boolean
     usuario: Usuario | null
-    token: string | null
+    token: string | null // Adicione o token aqui
     entrar: (usuario: Partial<Usuario>) => Promise<void>
     registrar: (usuario: Usuario) => Promise<void>
+    alterar: (usuario: Usuario) => Promise<void>
     excluir: (usuario: Usuario) => Promise<void>
     sair: () => void
 }
@@ -35,7 +36,17 @@ export function ProvedorUsuario({ children }: any) {
         await httpPost('/usuario/registrar', usuario)
     }
 
-    
+    // Função de alterar dados do usuário
+    async function alterar(usuario: Usuario) {
+        if (!token) {
+            throw new Error('Token de autenticação não encontrado. Faça login novamente.')
+        }
+        await httpPut('/usuario/alterar', usuario, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+    }
 
     // Função de excluir conta
     async function excluir(usuario: Usuario) {
@@ -61,6 +72,7 @@ export function ProvedorUsuario({ children }: any) {
                 token,
                 entrar,
                 registrar,
+                alterar,
                 excluir,
                 sair,
             }}
