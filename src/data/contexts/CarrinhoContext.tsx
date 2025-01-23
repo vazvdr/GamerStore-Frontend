@@ -1,5 +1,5 @@
-'use client'
-import { createContext, useContext, useState } from 'react';
+'use client';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { Produto } from '@/regras/core/src';
 
 export interface CarrinhoItem {
@@ -22,7 +22,20 @@ interface CarrinhoContextProps {
 const CarrinhoContext = createContext<CarrinhoContextProps | undefined>(undefined);
 
 export function CarrinhoProvider({ children }: { children: React.ReactNode }) {
-    const [carrinho, setCarrinho] = useState<CarrinhoItem[]>([]);
+    const [carrinho, setCarrinho] = useState<CarrinhoItem[]>(() => {
+        // Inicializar o estado a partir do localStorage, se disponível
+        const carrinhoSalvo = typeof window !== 'undefined' ? localStorage.getItem('carrinho') : null;
+        return carrinhoSalvo ? JSON.parse(carrinhoSalvo) : [];
+    });
+    const [sincronizado, setSincronizado] = useState(false);
+
+    useEffect(() => {
+        const carrinhoArmazenado = localStorage.getItem('carrinho');
+        if (carrinhoArmazenado) {
+            setCarrinho(JSON.parse(carrinhoArmazenado));
+        }
+        setSincronizado(true); // Marcar como sincronizado após carregar do localStorage
+    }, []);
 
     const adicionarAoCarrinho = (produto: Produto) => {
         setCarrinho((prev) => {
