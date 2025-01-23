@@ -26,6 +26,7 @@ const produtos: Produto[] = [
             Tela: '15.6 polegadas Full HD',
             Peso: '2.5 Kg',
         },
+        quantidade: 10, 
     },
     {
         id: 2,
@@ -51,6 +52,7 @@ const produtos: Produto[] = [
             Tela: '15.6 polegadas Full HD',
             Peso: '2.68 Kg',
         },
+        quantidade: 10,
     },
     {
         id: 3,
@@ -77,6 +79,7 @@ const produtos: Produto[] = [
             Tela: '15.6 polegadas Full HD',
             Peso: '2.3 Kg',
         },
+        quantidade: 10,
     },
     {
         id: 4,
@@ -103,6 +106,7 @@ const produtos: Produto[] = [
             Tela: '15.6 polegadas Full HD',
             Peso: '2.25 Kg',
         },
+        quantidade: 10,
     },
     {
         id: 5,
@@ -129,6 +133,7 @@ const produtos: Produto[] = [
             Tela: '15.6 polegadas Full HD 144Hz',
             Peso: '2.3 Kg',
         },
+        quantidade: 10,
     },
     {
         id: 6,
@@ -155,6 +160,7 @@ const produtos: Produto[] = [
             Tela: '15.6 polegadas Full HD 144Hz',
             Peso: '2.3 Kg',
         },
+        quantidade: 10,
     },
     {
         id: 7,
@@ -181,6 +187,7 @@ const produtos: Produto[] = [
             Tela: '15.6 polegadas Full HD 144Hz',
             Peso: '2.1 Kg',
         },
+        quantidade: 10,
     },
     {
         id: 8,
@@ -207,6 +214,7 @@ const produtos: Produto[] = [
             Tela: '15.6 polegadas Full HD 240Hz',
             Peso: '2.5 Kg',
         },
+        quantidade: 10,
     },
     {
         id: 9,
@@ -236,6 +244,7 @@ const produtos: Produto[] = [
             'Temperatura máxima': '90°C',
             peso: '243 g',
         },
+        quantidade: 10,
     },
     {
         id: 10,
@@ -264,6 +273,7 @@ const produtos: Produto[] = [
             Soquete: 'LGA 1700',
             peso: '101 g',
         },
+        quantidade: 10,
     },
     {
         id: 11,
@@ -293,6 +303,7 @@ const produtos: Produto[] = [
             'Temperatura máxima': '95°C',
             peso: '190 g',
         },
+        quantidade: 10,
     },
     {
         id: 12,
@@ -319,6 +330,7 @@ const produtos: Produto[] = [
             'Anti-Ghosting': 'Sim, N-Key Rollover',
             peso: '1130 g',
         },
+        quantidade: 10,
     },
     {
         id: 13,
@@ -345,6 +357,7 @@ const produtos: Produto[] = [
             'Anti-Ghosting': 'Sim, N-Key Rollover',
             peso: '1250 g',
         },
+        quantidade: 10,
     },
     {
         id: 14,
@@ -372,6 +385,7 @@ const produtos: Produto[] = [
             'Anti-Ghosting': 'Sim, N-Key Rollover',
             peso: '600 g',
         },
+        quantidade: 10,
     },
     {
         id: 15,
@@ -399,6 +413,7 @@ const produtos: Produto[] = [
             Estrutura: 'Plástico ABS e borracha texturizada',
             peso: '87 g (com peso ajustável de 10 g)',
         },
+        quantidade: 10,
     },
     {
         id: 16,
@@ -426,6 +441,7 @@ const produtos: Produto[] = [
             Estrutura: 'Plástico ABS texturizado',
             peso: '88 g',
         },
+        quantidade: 10,
     },
     {
         id: 17,
@@ -453,6 +469,7 @@ const produtos: Produto[] = [
             Estrutura: 'Plástico ABS com laterais texturizadas',
             peso: '95 g',
         },
+        quantidade: 10,
     },
     {
         id: 18,
@@ -478,6 +495,7 @@ const produtos: Produto[] = [
             Compatibilidade: 'PC, PS4, Xbox One',
             peso: '320 g',
         },
+        quantidade: 10,
     },
     {
         id: 19,
@@ -503,6 +521,7 @@ const produtos: Produto[] = [
             Compatibilidade: 'PC, PS4, Xbox One, Switch',
             peso: '250 g',
         },
+        quantidade: 10,
     },
     {
         id: 20,
@@ -529,6 +548,7 @@ const produtos: Produto[] = [
             Conectividade: 'HDMI, DisplayPort, USB',
             peso: '6.5 kg',
         },
+        quantidade: 10,
     },
     {
         id: 21,
@@ -555,6 +575,7 @@ const produtos: Produto[] = [
             Conectividade: 'HDMI, DisplayPort, USB',
             peso: '7.3 kg',
         },
+        quantidade: 10,
     },
     {
         id: 22,
@@ -579,6 +600,7 @@ const produtos: Produto[] = [
             TDP: '170 W',
             peso: '1.03 kg',
         },
+        quantidade: 10,
     },
     {
         id: 23,
@@ -603,6 +625,7 @@ const produtos: Produto[] = [
             TDP: '300W',
             peso: '2,52 kg',
         },
+        quantidade: 10,
     },
     {
         id: 24,
@@ -626,6 +649,7 @@ const produtos: Produto[] = [
             'RAM Suportada': 'DDR4 até 5333MHz',
             peso: '1.2 kg',
         },
+        quantidade: 10,
     },
     {
         id: 25,
@@ -649,6 +673,7 @@ const produtos: Produto[] = [
             'RAM Suportada': 'DDR4 até 4866MHz',
             peso: '2.01 kg',
         },
+        quantidade: 10,
     },
     {
         id: 26,
@@ -672,6 +697,7 @@ const produtos: Produto[] = [
             Compatibilidade: 'Intel e AMD',
             peso: '120 g',
         },
+        quantidade: 10,
     },
     {
         id: 27,
@@ -695,6 +721,7 @@ const produtos: Produto[] = [
             Compatibilidade: 'Intel e AMD',
             peso: '150 g',
         },
+        quantidade: 10,
     },
     {
         id: 28,
@@ -718,6 +745,7 @@ const produtos: Produto[] = [
             Armazenamento: '1TB SSD',
             peso: '4.05 kg',
         },
+        quantidade: 10,
     },
 ]
 
