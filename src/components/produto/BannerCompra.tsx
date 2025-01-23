@@ -1,14 +1,16 @@
-import { IconCreditCard, IconShoppingCart } from '@tabler/icons-react'
-import { Moeda, Produto } from '@/regras/core/src'
-import useParcelamento from '@/data/hooks/useParcelamento'
+import { IconCreditCard, IconShoppingCart } from '@tabler/icons-react';
+import { Moeda, Produto } from '@/regras/core/src';
+import useParcelamento from '@/data/hooks/useParcelamento';
+import { useCarrinho } from '@/data/contexts/CarrinhoContext';
 
 export interface BannerCompraProps {
-    produto: Produto
+    produto: Produto;
 }
 
 export default function BannerCompra(props: BannerCompraProps) {
-    const { produto } = props
-    const parcelamento = useParcelamento(produto.precoPromocional)
+    const { produto } = props;
+    const parcelamento = useParcelamento(produto.precoPromocional);
+    const { adicionarAoCarrinho } = useCarrinho();
 
     return (
         <div className="flex flex-col md:flex-row gap-5">
@@ -30,15 +32,18 @@ export default function BannerCompra(props: BannerCompraProps) {
 
             {/* Botões */}
             <div className="flex flex-col md:flex-row gap-3">
-                <button className="button flex items-center justify-center gap-2 bg-pink-600" onClick={() => { }}>
+                <button
+                    className="button flex items-center justify-center gap-2 bg-pink-600"
+                    onClick={() => adicionarAoCarrinho(produto)}
+                >
                     <IconShoppingCart size={20} />
                     <span>Adicionar</span>
                 </button>
-                <button className="button flex items-center justify-center gap-2 bg-violet-700" onClick={() => { }}>
+                <button className="button flex items-center justify-center gap-2 bg-violet-700">
                     <IconCreditCard size={20} />
                     <span>Comprar</span>
                 </button>
             </div>
         </div>
-    )
+    );
 }

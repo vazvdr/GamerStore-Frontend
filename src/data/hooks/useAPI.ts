@@ -49,7 +49,7 @@ export default function useAPI() {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,  // Inclui o token no cabeçalho
+                Authorization: `Bearer ${token}`, 
                 ...(config?.headers || {}),
             },
             body: JSON.stringify(data),
@@ -60,7 +60,7 @@ export default function useAPI() {
             throw new Error(`Erro: ${response.statusText}`);
         }
     
-        return await response.json();  // Espera a resposta como JSON
+        return await response.json();
     }    
 
     const httpDelete = useCallback(

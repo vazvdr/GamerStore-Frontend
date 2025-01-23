@@ -1,11 +1,17 @@
 import Logo from '../shared/Logo'
 import IconeCarrinho from '../shared/IconeCarrinho'
 import Link from 'next/link'
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import { Input } from '../ui/input'
 import { Search } from 'lucide-react'
+import { useCarrinho } from '@/data/contexts/CarrinhoContext'
 
 export default function Cabecalho() {
+    const { carrinho } = useCarrinho()
+
+    // Calcula a quantidade total de itens no carrinho
+    const quantidadeCarrinho = carrinho.reduce((total, produto) => total + (produto.quantidade || 1), 0)
+
     return (
         <div className="flex flex-col h-20 bg-black fixed top-0 w-full z-50">
             <div className="flex-1 container flex items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -16,8 +22,9 @@ export default function Cabecalho() {
 
                 {/* Barra de Pesquisa */}
                 <div className="flex items-center gap-1 w-[60%] mx-auto mr-4">
-                    <Input placeholder="Pesquisar produtos, categorias..." 
-                    className="text-black hover:bg-black 
+                    <Input
+                        placeholder="Pesquisar produtos, categorias..."
+                        className="text-black hover:bg-black 
                     hover:text-white hover:border border-purple-800 p-2"
                     />
                     <Button
@@ -30,16 +37,19 @@ export default function Cabecalho() {
                 </div>
 
                 {/* Botões à Direita */}
-                <div className="flex items-center ">
+                <div className="flex items-center">
                     <Link href="/login">
-                        <Button className="bg-white text-black hover:bg-black 
-                        hover:text-white hover:border border-purple-800">Entrar</Button>
+                        <Button
+                            className="bg-white text-black hover:bg-black 
+                        hover:text-white hover:border border-purple-800"
+                        >
+                            Entrar
+                        </Button>
                     </Link>
                     <Link href="/carrinho">
-                        <IconeCarrinho qtdeItens={0} />
+                        <IconeCarrinho qtdeItens={quantidadeCarrinho} />
                     </Link>
                 </div>
-
             </div>
             <div className="h-px bg-gradient-to-r from-purple-600/20 via-violet-600/80 to-violet-600/20"></div>
         </div>

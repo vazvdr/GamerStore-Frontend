@@ -1,5 +1,7 @@
+"use client";
 import Cabecalho from './Cabecalho'
 import Rodape from './Rodape'
+import { CarrinhoProvider } from '@/data/contexts/CarrinhoContext';
 
 export interface PaginaProps {
     className?: string
@@ -12,24 +14,27 @@ export interface PaginaProps {
 
 export default function Pagina(props: PaginaProps) {
     return (
-        <div
-            className="flex flex-col min-h-screen text-white bg-black mt-10"
-        >
+        <CarrinhoProvider>
             <div
-                className="flex-1 flex flex-col w-screen"
+                className="flex flex-col min-h-screen text-white bg-black mt-10"
             >
-                {props.semCabecalho ? null : <Cabecalho />}
-                <main
-                    className={`
+                <div
+                    className="flex-1 flex flex-col w-screen"
+                >
+                    {props.semCabecalho ? null : <Cabecalho />}
+                    <main
+                        className={`
                         flex-1 flex flex-col ${props.className ?? ''}
                         ${props.semContainer ? '' : 'container'}
                         ${props.semPadding ? '' : 'py-10'}
                     `}
-                >
-                    {props.children}
-                </main>
-                {props.semRodape ? null : <Rodape />}
+                    >
+                        {props.children}
+                    </main>
+                    {props.semRodape ? null : <Rodape />}
+                </div>
             </div>
-        </div>
+        </CarrinhoProvider>
+
     )
 }
