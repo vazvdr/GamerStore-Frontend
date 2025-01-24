@@ -23,19 +23,16 @@ const CarrinhoContext = createContext<CarrinhoContextProps | undefined>(undefine
 
 export function CarrinhoProvider({ children }: { children: React.ReactNode }) {
     const [carrinho, setCarrinho] = useState<CarrinhoItem[]>(() => {
-        // Inicializar o estado a partir do localStorage, se disponível
         const carrinhoSalvo = typeof window !== 'undefined' ? localStorage.getItem('carrinho') : null;
         return carrinhoSalvo ? JSON.parse(carrinhoSalvo) : [];
     });
-    const [sincronizado, setSincronizado] = useState(false);
 
+    // Atualiza o localStorage sempre que o carrinho é modificado
     useEffect(() => {
-        const carrinhoArmazenado = localStorage.getItem('carrinho');
-        if (carrinhoArmazenado) {
-            setCarrinho(JSON.parse(carrinhoArmazenado));
-        }
-        setSincronizado(true); // Marcar como sincronizado após carregar do localStorage
-    }, []);
+        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+    }, [carrinho]);
+
+    
 
     const adicionarAoCarrinho = (produto: Produto) => {
         setCarrinho((prev) => {

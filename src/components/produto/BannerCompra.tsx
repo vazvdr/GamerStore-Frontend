@@ -14,7 +14,6 @@ export default function BannerCompra(props: BannerCompraProps) {
 
     return (
         <div className="flex flex-col md:flex-row gap-5">
-            {/* Preço */}
             <div className="flex flex-col border-b md:border-b-0 md:border-r border-zinc-500 pb-5 md:pb-0 md:pr-5">
                 <div className="line-through text-zinc-400">de R$ {produto?.precoBase}</div>
                 <div className="text-2xl font-semibold">
@@ -24,13 +23,11 @@ export default function BannerCompra(props: BannerCompraProps) {
                 </div>
             </div>
 
-            {/* Parcelamento */}
             <div className="flex flex-col text-2xl font-semibold text-zinc-400 md:border-l border-zinc-500 md:pl-5">
                 <span className="text-base text-zinc-300">{parcelamento.qtdeParcelas}x de</span>
                 {Moeda.formatar(parcelamento.valorParcela)}{' '}
             </div>
 
-            {/* Botões */}
             <div className="flex flex-col md:flex-row gap-3">
                 <button
                     className="button flex items-center justify-center gap-2 bg-pink-600"
