@@ -14,7 +14,7 @@ export default function ProdutoItem(props: ProdutoItemProps) {
     return (
         <Link
             href={`/produto/${produto.id}`}
-            className="flex flex-col bg-violet-dark border border-white/10 rounded-xl relative max-w-[350px]"
+            className="flex flex-col bg-violet-dark border border-green-500/25 rounded-xl relative max-w-[350px]"
         >
             <div className="absolute flex justify-end top-2.5 right-2.5">
                 <NotaReview nota={produto.nota} />
