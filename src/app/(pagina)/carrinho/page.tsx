@@ -29,51 +29,74 @@ export default function Carrinho() {
                     </Link>
                 </div>
             ) : (
-                <div className="grid gap-4">
-                    {carrinho.map((produto) => (
-                        <div
-                            key={produto.id}
-                            className="flex items-center gap-4 bg-transparent text-white 
-                            border border-purple-900 p-4 rounded-lg shadow-md"
+                <div>
+                    <div className="grid gap-4">
+                        {carrinho.map((produto) => (
+                            <div
+                                key={produto.id}
+                                className="flex items-center gap-4 bg-transparent text-white 
+            border border-purple-900 p-4 rounded-lg shadow-md"
+                            >
+                                <div className="w-20 h-20 flex-shrink-0">
+                                    <img
+                                        src={produto.imagem}
+                                        alt={produto.nome}
+                                        className="w-full h-full object-cover rounded"
+                                    />
+                                </div>
+
+                                <div className="flex-grow">
+                                    <h2 className="text-lg font-semibold">{produto.nome}</h2>
+                                    <p className="text-sm text-gray-400">{produto.descricao}</p>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => diminuirQuantidade(produto.id)}
+                                        className="p-2 bg-gray-700 hover:bg-purple-800 rounded-full"
+                                    >
+                                        <Minus size={16} />
+                                    </button>
+                                    <span className="px-3">{produto.quantidade}</span>
+                                    <button
+                                        onClick={() => aumentarQuantidade(produto.id)}
+                                        className="p-2 bg-gray-700 hover:bg-purple-800 rounded-full"
+                                    >
+                                        <Plus size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => removerDoCarrinho(produto.id)}
+                                        className="p-2 text-red-500 hover:text-red-700"
+                                    >
+                                        <Trash size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex justify-between items-center mt-6">
+                        {/* Botão "Continuar Comprando" */}
+                        <Link href="/">
+                            <button
+                                className="px-4 py-2 border border-green-500 rounded-lg bg-transparent 
+            text-green-500 hover:bg-white hover:text-black hover:text-white transition"
+                            >
+                                Continuar Comprando
+                            </button>
+                        </Link>
+
+                        {/* Botão "Finalizar Compra" */}
+                        <button
+                            className="px-4 py-2 border border-purple-900 rounded-lg bg-transparent 
+          text-purple-900 hover:bg-white hover:text-black hover:text-white transition"
                         >
-                            <div className="w-20 h-20 flex-shrink-0">
-                                <img
-                                    src={produto.imagem}
-                                    alt={produto.nome}
-                                    className="w-full h-full object-cover rounded"
-                                />
-                            </div>
-
-                            <div className="flex-grow">
-                                <h2 className="text-lg font-semibold">{produto.nome}</h2>
-                                <p className="text-sm text-gray-400">{produto.descricao}</p>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={() => diminuirQuantidade(produto.id)}
-                                    className="p-2 bg-gray-700 hover:bg-purple-800 rounded-full"
-                                >
-                                    <Minus size={16} />
-                                </button>
-                                <span className="px-3">{produto.quantidade}</span>
-                                <button
-                                    onClick={() => aumentarQuantidade(produto.id)}
-                                    className="p-2 bg-gray-700 hover:bg-purple-800 rounded-full"
-                                >
-                                    <Plus size={16} />
-                                </button>
-                                <button
-                                    onClick={() => removerDoCarrinho(produto.id)}
-                                    className="p-2 text-red-500 hover:text-red-700"
-                                >
-                                    <Trash size={16} />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                            Finalizar Compra
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
+
     );
 }
