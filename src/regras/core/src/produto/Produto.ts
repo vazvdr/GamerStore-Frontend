@@ -13,4 +13,5 @@ export default interface Produto extends Precificavel {
     tags: string[]
     especificacoes: Especificacoes
     quantidade: number
+    precoPromocional: number
 }

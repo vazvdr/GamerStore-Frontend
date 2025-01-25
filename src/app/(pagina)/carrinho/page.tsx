@@ -53,22 +53,22 @@ export default function Carrinho() {
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => diminuirQuantidade(produto.id)}
-                                        className="p-2 bg-gray-700 hover:bg-purple-800 rounded-full"
+                                        className="p-2 bg-green-600 hover:bg-purple-800 rounded-full"
                                     >
                                         <Minus size={16} />
                                     </button>
                                     <span className="px-3">{produto.quantidade}</span>
                                     <button
                                         onClick={() => aumentarQuantidade(produto.id)}
-                                        className="p-2 bg-gray-700 hover:bg-purple-800 rounded-full"
+                                        className="p-2 bg-green-600 hover:bg-purple-800 rounded-full"
                                     >
                                         <Plus size={16} />
                                     </button>
                                     <button
                                         onClick={() => removerDoCarrinho(produto.id)}
-                                        className="p-2 text-red-500 hover:text-red-700"
+                                        className="p-4 text-red-500 hover:text-red-700"
                                     >
-                                        <Trash size={16} />
+                                        <Trash size={20} />
                                     </button>
                                 </div>
                             </div>
@@ -80,19 +80,21 @@ export default function Carrinho() {
                         <Link href="/">
                             <button
                                 className="px-4 py-2 border border-green-500 rounded-lg bg-transparent 
-            text-green-500 hover:bg-white hover:text-black hover:text-white transition"
+            text-white hover:bg-white hover:text-black hover:text-black transition"
                             >
                                 Continuar Comprando
                             </button>
                         </Link>
 
                         {/* Botão "Finalizar Compra" */}
-                        <button
-                            className="px-4 py-2 border border-purple-900 rounded-lg bg-transparent 
-          text-purple-900 hover:bg-white hover:text-black hover:text-white transition"
-                        >
-                            Finalizar Compra
-                        </button>
+                        <Link href="/comprar">
+                            <button
+                                className="px-4 py-2 border border-purple-900 rounded-lg bg-transparent 
+          text-white hover:bg-white hover:text-black hover:text-black transition"
+                            >
+                                Finalizar Compra
+                            </button>
+                        </Link>
                     </div>
                 </div>
             )}

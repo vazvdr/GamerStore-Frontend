@@ -17,6 +17,7 @@ const produtos: Produto[] = [
         menorPreco: 4850.9,
         maiorPreco: 9800.8,
         precoMedio: 6503.7,
+        
         especificacoes: {
             destaque: 'NVIDIA GeForce RTX 2060',
             Processador: 'Intel Core i5-9300H',

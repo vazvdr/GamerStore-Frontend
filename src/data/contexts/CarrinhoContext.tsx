@@ -7,6 +7,7 @@ export interface CarrinhoItem {
     nome: string;
     imagem: string;
     descricao: string;
+    precoPromocional: number;
     quantidade: number;
 }
 
@@ -27,12 +28,14 @@ export function CarrinhoProvider({ children }: { children: React.ReactNode }) {
         return carrinhoSalvo ? JSON.parse(carrinhoSalvo) : [];
     });
 
-    // Atualiza o localStorage sempre que o carrinho é modificado
+    const [quantidadeCarrinho, setQuantidadeCarrinho] = useState<number>(0);
+
     useEffect(() => {
         localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        // Atualiza a quantidade total de itens no carrinho
+        const totalItens = carrinho.reduce((total, item) => total + item.quantidade, 0);
+        setQuantidadeCarrinho(totalItens);
     }, [carrinho]);
-
-    
 
     const adicionarAoCarrinho = (produto: Produto) => {
         setCarrinho((prev) => {
@@ -51,6 +54,7 @@ export function CarrinhoProvider({ children }: { children: React.ReactNode }) {
                         nome: produto.nome,
                         imagem: produto.imagem,
                         descricao: produto.descricao,
+                        precoPromocional: produto.precoPromocional ?? 0,
                         quantidade: 1,
                     },
                 ];
@@ -83,8 +87,6 @@ export function CarrinhoProvider({ children }: { children: React.ReactNode }) {
                 .filter((item) => item.quantidade > 0)
         );
     };
-
-    const quantidadeCarrinho = carrinho.reduce((total, item) => total + item.quantidade, 0);
 
     return (
         <CarrinhoContext.Provider

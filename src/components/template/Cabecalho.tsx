@@ -1,5 +1,4 @@
-'use client'
-import { useEffect, useState } from 'react';
+'use client';
 import Logo from '../shared/Logo';
 import IconeCarrinho from '../shared/IconeCarrinho';
 import Link from 'next/link';
@@ -9,14 +8,7 @@ import { Search } from 'lucide-react';
 import { useCarrinho } from '@/data/contexts/CarrinhoContext';
 
 export default function Cabecalho() {
-    const { carrinho } = useCarrinho();
-    const [quantidadeCarrinho, setQuantidadeCarrinho] = useState(0);
-
-    useEffect(() => {
-        // Atualiza a quantidade de itens no carrinho
-        const totalItens = carrinho.reduce((total, produto) => total + (produto.quantidade || 1), 0);
-        setQuantidadeCarrinho(totalItens);
-    }, [carrinho]);
+    const { quantidadeCarrinho } = useCarrinho();
 
     return (
         <div className="flex flex-col h-20 bg-black fixed top-0 w-full z-50">
