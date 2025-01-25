@@ -4,6 +4,7 @@ import { IconShoppingCartPlus } from '@tabler/icons-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import NotaReview from '../shared/NotaReview'
+import { useCarrinho } from '@/data/contexts/CarrinhoContext'
 
 export interface ProdutoItemProps {
     produto: Produto
@@ -11,6 +12,7 @@ export interface ProdutoItemProps {
 
 export default function ProdutoItem(props: ProdutoItemProps) {
     const { produto } = props
+    const { adicionarAoCarrinho } = useCarrinho()
     return (
         <Link
             href={`/produto/${produto.id}`}
@@ -53,7 +55,7 @@ export default function ProdutoItem(props: ProdutoItemProps) {
                     "
                     onClick={(e: any) => {
                         e.preventDefault()
-                        console.log('Adicionar ao carrinho')
+                        adicionarAoCarrinho(produto)
                     }}
                 >
                     <IconShoppingCartPlus size={20} />
