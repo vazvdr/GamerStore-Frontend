@@ -51,13 +51,15 @@ export default function Carrinho() {
                                     <p className="text-sm text-gray-400">{produto.descricao}</p>
                                 </div>
 
-                                <div className="flex items-center gap-2">
+                                <div
+                                    className="flex items-center gap-2 md:flex-row flex-col"
+                                >
                                     <button
                                         onClick={() => diminuirQuantidade(produto.id)}
                                         disabled={produto.quantidade === 1}
                                         className={`p-2 rounded-full ${produto.quantidade === 1
-                                                ? "bg-black cursor-not-allowed"
-                                                : "bg-green-600 hover:bg-purple-800"
+                                            ? "bg-black cursor-not-allowed"
+                                            : "bg-green-600 hover:bg-purple-800"
                                             }`}
                                     >
                                         <Minus size={16} />
@@ -104,6 +106,5 @@ export default function Carrinho() {
                 </div>
             )}
         </div>
-
     );
 }
