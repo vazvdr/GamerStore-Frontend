@@ -17,7 +17,7 @@ export default function Carrinho() {
     if (!mounted) return null;
 
     return (
-        <div className="container mx-auto px-4 sm:px-4 lg:px-8 py-6 w-full max-w-screen-md">
+        <div className="container mx-auto px-4 sm:px-4 lg:px-8 py-6 w-full">
             <h1 className="text-2xl font-bold mb-6">Carrinho de Compras</h1>
 
             {carrinho.length === 0 ? (
