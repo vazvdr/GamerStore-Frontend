@@ -1,22 +1,37 @@
 'use client'
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Comprado() {
     const router = useRouter();
 
+    useEffect(() => {
+        const compraFinalizada = localStorage.getItem('compraFinalizada');
+
+        if (!compraFinalizada) {
+            // Redirecionar para a página inicial se a compra não foi finalizada
+            router.push('/');
+        } else {
+            // Limpar a flag após acessar a página
+            localStorage.removeItem('compraFinalizada');
+        }
+    }, [router]);
+
     return (
-        <div className="flex justify-center mt-[5%] min-h-screen bg-transparent text-white">
-            <div className="w-[40%] bg-transparent text-white text-center">
-                <h1 className="text-4xl font-bold mb-8">
-                    Parabéns! Você comprou na Gam3r.Store. <br /> <br/>
-                    Verifique seu email informado.
+        <div className="flex items-center mt-[2%] justify-center text-white">
+            <div className="w-[90%] max-w-md bg-transparent rounded-2xl border border-green-500 shadow-lg p-8 text-center">
+                <h1 className="text-3xl font-extrabold mt-[2%] text-white animate-fadeIn">
+                    🎉 Parabéns! <br /> Você comprou na <span className="text-purple-600">Gam3r.Store</span>! 🎮
                 </h1>
+                <p className="text-lg text-yellow-400 mb-8">
+                    Verifique seus pedidos no botão abaixo.
+                </p>
                 <button
-                    onClick={() => router.push("/")}
-                    className="px-6 py-3 bg-purple-700 hover:bg-purple-500 text-white font-semibold text-lg rounded-lg"
+                    onClick={() => router.push("/pedidos")}
+                    className="px-6 py-3 bg-transparent text-white border border-purple-900 font-semibold text-lg rounded-lg shadow-md hover:bg-green-500 hover:text-black hover:shadow-lg transition-all"
                 >
-                    Voltar para a página inicial
+                    Ir para pedidos.
                 </button>
             </div>
         </div>

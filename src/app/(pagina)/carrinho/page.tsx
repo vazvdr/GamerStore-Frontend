@@ -54,7 +54,11 @@ export default function Carrinho() {
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => diminuirQuantidade(produto.id)}
-                                        className="p-2 bg-green-600 hover:bg-purple-800 rounded-full"
+                                        disabled={produto.quantidade === 1}
+                                        className={`p-2 rounded-full ${produto.quantidade === 1
+                                                ? "bg-black cursor-not-allowed"
+                                                : "bg-green-600 hover:bg-purple-800"
+                                            }`}
                                     >
                                         <Minus size={16} />
                                     </button>

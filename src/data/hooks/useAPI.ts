@@ -1,7 +1,7 @@
-import { useCallback } from 'react';
-import useSessao from './useSessao';
+import { useCallback } from 'react'
+import useSessao from './useSessao'
 
-const URL_BASE = 'https://gamer-store-backend.vercel.app';
+const URL_BASE = 'https://gamer-store-backend.vercel.app'
 
 export default function useAPI() {
     const { token } = useSessao()
@@ -27,8 +27,7 @@ export default function useAPI() {
 
     const httpPost = useCallback(
         async function (uri: string, body: any): Promise<any> {
-            const path = uri.startsWith('/') ? uri : `/${uri}`;
-            console.log(`Fazendo POST para ${path} com body:`, body);
+            const path = uri.startsWith('/') ? uri : `/${uri}`
             const resp = await fetch(`${URL_BASE}${path}`, {
                 method: 'POST',
                 headers: {
@@ -36,20 +35,18 @@ export default function useAPI() {
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(body),
-            });
-            const data = await extrairDados(resp);
-            console.log(`Resposta recebida no POST para ${path}:`, data);
-            return data;
+            })
+            return extrairDados(resp)
         },
         [token]
-    );
+    )
 
     async function httpPut(url: string, data: any, config?: RequestInit): Promise<any> {
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`, 
+                Authorization: `Bearer ${token}`,  // Inclui o token no cabeçalho
                 ...(config?.headers || {}),
             },
             body: JSON.stringify(data),
@@ -60,7 +57,7 @@ export default function useAPI() {
             throw new Error(`Erro: ${response.statusText}`);
         }
     
-        return await response.json();
+        return await response.json();  // Espera a resposta como JSON
     }    
 
     const httpDelete = useCallback(
@@ -79,19 +76,13 @@ export default function useAPI() {
     )
 
     async function extrairDados(resp: Response) {
-        console.log('Extraindo dados da resposta:', resp);
-        let conteudo = null;
+        let conteudo = ''
         try {
-            conteudo = await resp.json();
-        } catch (error) {
-            console.error('Erro ao extrair JSON da resposta:', error);
+            conteudo = await resp.text()
+            return JSON.parse(conteudo)
+        } catch (e) {
+            return conteudo
         }
-        if (!resp.ok) {
-            console.error('Erro na resposta:', conteudo);
-            throw new Error(conteudo?.message || 'Erro desconhecido');
-        }
-        console.log('Dados extraídos com sucesso:', conteudo);
-        return conteudo;
     }
 
     return { httpGet, httpPost, httpPut, httpDelete }

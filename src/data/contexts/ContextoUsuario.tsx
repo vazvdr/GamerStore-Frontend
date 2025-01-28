@@ -27,11 +27,8 @@ export function ProvedorUsuario({ children }: any) {
 
     // Função de login
     async function entrar(usuario: Partial<Usuario>) {
-        console.log('Iniciando processo de login:', usuario);
-        const token = await httpPost('/usuario/login', usuario);
-        console.log('Token recebido no login:', token);
-        criarSessao(token); // Armazena o token
-        console.log('Sessão criada com sucesso');
+        const token = await httpPost('/usuario/login', usuario)
+        criarSessao(token) // Armazena o token
     }
 
     // Função de registrar
@@ -44,6 +41,7 @@ export function ProvedorUsuario({ children }: any) {
         if (!token) {
             throw new Error('Token de autenticação não encontrado. Faça login novamente.')
         }
+
         await httpPut('/usuario/alterar', usuario, {
             headers: {
                 Authorization: `Bearer ${token}`

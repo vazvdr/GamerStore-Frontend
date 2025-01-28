@@ -18,6 +18,7 @@ interface CarrinhoContextProps {
     aumentarQuantidade: (produtoId: number) => void;
     diminuirQuantidade: (produtoId: number) => void;
     quantidadeCarrinho: number;
+    esvaziarCarrinho: () => void;
 }
 
 const CarrinhoContext = createContext<CarrinhoContextProps | undefined>(undefined);
@@ -88,6 +89,12 @@ export function CarrinhoProvider({ children }: { children: React.ReactNode }) {
         );
     };
 
+    // Função para esvaziar o carrinho
+    const esvaziarCarrinho = () => {
+        setCarrinho([]); // Limpa o carrinho no estado
+        localStorage.removeItem('carrinho'); // Remove o carrinho do localStorage
+    };
+
     return (
         <CarrinhoContext.Provider
             value={{
@@ -97,6 +104,7 @@ export function CarrinhoProvider({ children }: { children: React.ReactNode }) {
                 aumentarQuantidade,
                 diminuirQuantidade,
                 quantidadeCarrinho,
+                esvaziarCarrinho,
             }}
         >
             {children}
