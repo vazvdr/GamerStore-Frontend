@@ -6,18 +6,6 @@ import { useEffect } from "react";
 export default function Comprado() {
     const router = useRouter();
 
-    useEffect(() => {
-        const compraFinalizada = localStorage.getItem('compraFinalizada');
-
-        if (!compraFinalizada) {
-            // Redirecionar para a página inicial se a compra não foi finalizada
-            router.push('/');
-        } else {
-            // Limpar a flag após acessar a página
-            localStorage.removeItem('compraFinalizada');
-        }
-    }, [router]);
-
     return (
         <div className="flex items-center mt-[2%] justify-center text-white">
             <div className="w-[90%] max-w-md bg-transparent rounded-2xl border border-green-500 shadow-lg p-8 text-center">
