@@ -58,7 +58,7 @@ export default function Carrinho() {
                                         onClick={() => diminuirQuantidade(produto.id)}
                                         disabled={produto.quantidade === 1}
                                         className={`p-2 rounded-full ${produto.quantidade === 1
-                                            ? "bg-black cursor-not-allowed"
+                                            ? "bg-black border border-purple-900 cursor-not-allowed"
                                             : "bg-green-600 hover:bg-purple-800"
                                             }`}
                                     >
