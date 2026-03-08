@@ -1,19 +1,24 @@
 import { useParams } from "react-router-dom";
-import { useProducts } from "../hooks/useProducts";
+import { useProducts } from "../data/hooks/useProducts";
 import ProductCard from "../components/ProductCard";
 import { HoverEffect } from "../components/ui/card-hover-effect";
+
+// Normaliza texto: minusculas + remove acentos + trim
+function normalizeText(text) {
+    return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+}
 
 export default function Categoria() {
     const { slug } = useParams();
 
-    // transforma "placas-de-video" → "placas de video"
-    const search = slug.replace(/-/g, " ");
+    // Normaliza categoria da URL
+    const search = normalizeText(slug.replace(/-/g, " "));
 
-    const {
-        data: products,
-        loading,
-        error
-    } = useProducts({ search });
+    const { data: products, loading, error } = useProducts({ search });
 
     if (loading) {
         return (

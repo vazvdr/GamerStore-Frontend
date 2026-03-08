@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { esqueceuSenha } from "@/services/UserService";
+import { esqueceuSenha } from "../data/services/UserService";
 
 export function EsqueceuSenhaDialog() {
     const [email, setEmail] = useState("");

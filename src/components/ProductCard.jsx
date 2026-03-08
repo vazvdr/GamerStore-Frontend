@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useCart } from "../contexts/CartContext";
+import { useCart } from "../data/contexts/CartContext";
 
 export default function ProductCard({ product }) {
     const navigate = useNavigate();

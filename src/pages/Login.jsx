@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../data/contexts/AuthContext";
 import Logo from "../assets/logo.png";
 import LogoTexto from "../assets/logo-texto.png";
 import { EsqueceuSenhaDialog } from "@/components/EsqueceuSenhaDialog";
@@ -23,7 +23,8 @@ export default function Login() {
 
         try {
             if (isLogin) {
-                await handleLogin(form.email, form.senha);
+
+                const loggedUser = await handleLogin(form.email, form.senha);
                 navigate("/");
             } else {
                 await handleRegister({
@@ -34,7 +35,7 @@ export default function Login() {
                 setIsLogin(true);
             }
         } catch (_) {
-            // erro tratado no useAuth
+            // erro tratado no AuthContext
         }
     }
 

@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import Logo from "../../assets/logo.png";
 import LogoTexto from "../../assets/logo-texto.png";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import { useCart } from "../../contexts/CartContext";
+import { useAuth } from "../../data/contexts/AuthContext";
+import { useCart } from "../../data/contexts/CartContext";
 
 import {
     DropdownMenu,

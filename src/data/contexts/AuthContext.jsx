@@ -1,67 +1,101 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { login as loginService, cadastrar, editarUsuario, deletarUsuario } from "../services/UserService";
-import { setToken, getToken, removeToken } from "../utils/cookies";
+import {
+    login as loginService,
+    cadastrar,
+    editarUsuario,
+    deletarUsuario
+} from "../services/UserService";
+import { setToken, getToken, removeToken } from "../../utils/cookies";
 import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext(null);
+
+const INACTIVITY_TIME = 5 * 60 * 1000;
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    /* 🔄 Carrega usuário ao iniciar, se existir token */
+    // ===============================
+    // 🔐 Verifica token ao iniciar app
+    // ===============================
     useEffect(() => {
         const token = getToken();
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
+
+        if (!token) {
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const decoded = jwtDecode(token);
+
+            const isExpired = decoded.exp * 1000 < Date.now();
+
+            if (isExpired) {
+                logout();
+            } else {
                 setUser({
                     id: decoded.sub,
                     nome: decoded.nome,
                     email: decoded.email,
+                    stripeCustomerId: decoded.stripeCustomerId
                 });
-            } catch {
-                removeToken();
-                setUser(null);
             }
+
+        } catch {
+            logout();
         }
+
         setLoading(false);
     }, []);
 
-    
+    useEffect(() => {
+        if (!user) return;
+
+        let timeout;
+
+        const resetTimer = () => {
+            clearTimeout(timeout);
+
+            timeout = setTimeout(() => {
+                logout();
+            }, INACTIVITY_TIME);
+        };
+
+        // Eventos considerados como atividade
+        window.addEventListener("mousemove", resetTimer);
+        window.addEventListener("keydown", resetTimer);
+        window.addEventListener("click", resetTimer);
+        window.addEventListener("scroll", resetTimer);
+
+        // Inicia contador
+        resetTimer();
+
+        return () => {
+            clearTimeout(timeout);
+            window.removeEventListener("mousemove", resetTimer);
+            window.removeEventListener("keydown", resetTimer);
+            window.removeEventListener("click", resetTimer);
+            window.removeEventListener("scroll", resetTimer);
+        };
+    }, [user]);
+
     async function handleLogin(email, senha) {
         const data = await loginService(email, senha);
 
         setToken(data.token);
 
         const decoded = jwtDecode(data.token);
-        const userId = decoded.sub;
 
-        const cartRaw = localStorage.getItem("cart");
-        let cartLog = { items: [], total: 0 };
-        if (cartRaw) {
-            try {
-                const parsed = JSON.parse(cartRaw);
-                cartLog = {
-                    items: parsed.items ?? [],
-                    total: parsed.total ?? 0,
-                };
-            } catch {
-                cartLog = { items: [], total: 0 };
-            }
-        }
-    
         setUser({
-            id: userId,
+            id: decoded.sub,
             nome: decoded.nome,
             email: decoded.email,
+            stripeCustomerId: decoded.stripeCustomerId
         });
 
-        return {
-            id: userId,
-            nome: decoded.nome,
-            email: decoded.email,
-        };
+        return data.usuario;
     }
 
     async function handleRegister(usuario) {

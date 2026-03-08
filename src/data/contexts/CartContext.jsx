@@ -1,33 +1,23 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { saveCart } from "../services/CartService";
+
+import {
+    addItemToCart,
+    removeItemFromCart,
+    increaseItemQuantity,
+    decreaseItemQuantity,
+    clearCart as clearCartRequest,
+    getCart
+} from "../services/CartService";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
+
     const { user } = useAuth();
 
-       const [cartItems, setCartItems] = useState(() => {
-        const stored = localStorage.getItem("cart");
-
-        if (!stored) return [];
-
-        try {
-            const parsed = JSON.parse(stored);
-            const items = parsed.items ?? parsed;
-
-            return Array.isArray(items)
-                ? items.map(item => ({
-                    ...item,
-                    quantidade: Number(item.quantidade) || 1,
-                    preco: Number(item.preco) || 0,
-                    estoque: Number(item.estoque) || Infinity
-                }))
-                : [];
-        } catch {
-            return [];
-        }
-    });
+    const [cartItems, setCartItems] = useState([]);
+    const [loadingCart, setLoadingCart] = useState(true);
 
     const cartTotal = cartItems.reduce(
         (total, item) => total + item.preco * item.quantidade,
@@ -39,93 +29,78 @@ export function CartProvider({ children }) {
         0
     );
 
-    useEffect(() => {
-        localStorage.setItem(
-            "cart",
-            JSON.stringify({
-                items: cartItems,
-                total: cartTotal
-            })
-        );
-    }, [cartItems, cartTotal]);
-
-    useEffect(() => {
-        if (!user?.id) return;
-
-        saveCart(user.id, cartItems, cartTotal)
-            .then(data => {
-                if (data) {
-                }
-            })
-            .catch(err => {
-                console.error("Erro ao enviar carrinho:", err);
-            });
-    }, [user, cartItems, cartTotal]);
-
-    function addToCart(product) {
-        setCartItems(prev => {
-            const existing = prev.find(item => item.id === product.id);
-
-            const estoqueReal =
-                Number(product.estoque ?? product.quantity ?? product.stock) || Infinity;
-
-            if (existing) {
-                return prev.map(item =>
-                    item.id === product.id
-                        ? {
-                            ...item,
-                            quantidade:
-                                item.quantidade < item.estoque
-                                    ? item.quantidade + 1
-                                    : item.quantidade
-                        }
-                        : item
-                );
+    // 🔹 carregar carrinho
+    async function loadCart() {
+        if (!user?.id) {
+            setCartItems([]);
+            setLoadingCart(false);
+            return;
+        }
+        try {
+            const data = await getCart(user.id);
+            if (data?.items) {
+                const items = data.items.map(item => ({
+                    id: item.productId,
+                    nome: item.nome,
+                    descricao: item.descricao,
+                    preco: Number(item.preco),
+                    quantidade: Number(item.quantidade),
+                    imageUrl: item.imageUrl
+                }));
+                setCartItems(items);
+            } else {
+                setCartItems([]);
             }
-
-            return [
-                ...prev,
-                {
-                    id: product.id,
-                    nome: product.name,
-                    descricao: product.description,
-                    preco: Number(product.price),
-                    imageUrl: product.imageUrl,
-                    estoque: estoqueReal,
-                    quantidade: 1
-                }
-            ];
-        });
+        } catch (err) {
+            console.error("Erro ao buscar carrinho:", err);
+            setCartItems([]);
+        } finally {
+            setLoadingCart(false);
+        }
     }
 
-    function removeFromCart(id) {
-        setCartItems(prev => prev.filter(item => item.id !== id));
+    useEffect(() => {
+        loadCart();
+    }, [user]);
+
+    async function addToCart(product) {
+        if (!user?.id) return;
+        const payload = {
+            productId: product.id,
+            quantidade: 1
+        };
+        console.log("Payload enviado:", payload);
+        await addItemToCart(user.id, payload);
+        loadCart();
     }
 
-    function increaseQuantity(id) {
-        setCartItems(prev =>
-            prev.map(item =>
-                item.id === id
-                    ? {
-                        ...item,
-                        quantidade:
-                            item.quantidade < item.estoque
-                                ? item.quantidade + 1
-                                : item.quantidade
-                    }
-                    : item
-            )
-        );
+    // 🔹 remover produto
+    async function removeFromCart(productId) {
+        if (!user?.id) return;
+        await removeItemFromCart(user.id, productId);
+        loadCart();
     }
 
-    function decreaseQuantity(id) {
-        setCartItems(prev =>
-            prev.map(item =>
-                item.id === id && item.quantidade > 1
-                    ? { ...item, quantidade: item.quantidade - 1 }
-                    : item
-            )
-        );
+    async function increaseQuantity(productId) {
+        if (!user?.id) return;
+        const item = cartItems.find(i => i.id === productId);
+        if (!item) return;
+        const novaQuantidade = item.quantidade + 1;
+        await increaseItemQuantity(user.id, productId, novaQuantidade);
+        loadCart();
+    }
+    // 🔹 diminuir quantidade
+    async function decreaseQuantity(productId) {
+        if (!user?.id) return;
+        await decreaseItemQuantity(user.id, productId);
+        loadCart();
+    }
+
+    // 🔹 limpar carrinho
+    async function clearCart() {
+        if (!user?.id) return;
+        await clearCartRequest(user.id);
+        setCartItems([]);
     }
 
     return (
@@ -134,10 +109,12 @@ export function CartProvider({ children }) {
                 cartItems,
                 cartCount,
                 cartTotal,
+                loadingCart,
                 addToCart,
                 removeFromCart,
                 increaseQuantity,
-                decreaseQuantity
+                decreaseQuantity,
+                clearCart
             }}
         >
             {children}

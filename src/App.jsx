@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import StripeProvider from "./providers/StripeProvider";
 import Home from "../src/pages/home";
 import Login from "../src/pages/Login";
 import HeaderWrapper from "./components/Header/HeaderWrapper";
@@ -10,6 +11,7 @@ import Conta from "../src/pages/Conta";
 import PrivateRoute from "../src/routes/PrivateRoutes";
 import RecuperarSenha from "./pages/RecuperarSenha";
 import Pagamento from "./pages/Pagamento";
+import PagamentoSucesso from "./pages/PagamentoSucesso";
 
 function App() {
   return (
@@ -21,20 +23,43 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/produto/:id" element={<Produto />} />
         <Route path="/categoria/:slug" element={<Categoria />} />
-        <Route path="/carrinho" element={<Carrinho />} />
+
+        <Route
+          path="/carrinho"
+          element={
+            <StripeProvider>
+              <Carrinho />
+            </StripeProvider>
+          }
+        />
+
         <Route path="/recuperar-senha" element={<RecuperarSenha />} />
 
-        <Route path="/conta" element={
-          <PrivateRoute>
-            <Conta />
-          </PrivateRoute>
-        }
+        <Route
+          path="/conta"
+          element={
+            <PrivateRoute>
+              <StripeProvider>
+                <Conta />
+              </StripeProvider>
+            </PrivateRoute>
+          }
         />
-        <Route path="/pagamento" element={
-          <PrivateRoute>
-            <Pagamento />
-          </PrivateRoute>
-        }
+
+        <Route
+          path="/pagamento"
+          element={
+            <PrivateRoute>
+              <StripeProvider>
+                <Pagamento />
+              </StripeProvider>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/pagamento-sucesso"
+          element={<PagamentoSucesso />}
         />
       </Routes>
 
