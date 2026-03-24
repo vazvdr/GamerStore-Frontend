@@ -3,7 +3,7 @@ import { useAuth } from "../data/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import useEnderecos from "../data/hooks/useEnderecos";
 import useFrete from "../data/hooks/useFrete";
-import { usePagamento } from "../data/hooks/usePagamentos";
+import { usePagamento } from "@/data/hooks/usePagamentos";
 import CartItems from "../components/carrinho/CartItems";
 import CartClearButton from "../components/carrinho/CartClearButton";
 import CartAddressForm from "../components/carrinho/CartAddressForm";
@@ -12,30 +12,22 @@ import CartCepFrete from "../components/carrinho/CartCepFrete";
 import CartShippingOptions from "../components/carrinho/CartShippingOptions";
 import CartSummary from "../components/carrinho/CartSummary";
 import CartActions from "../components/carrinho/CartActions";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 export default function Carrinho() {
     const {
         cartItems,
+        cartSubtotal,
+        cartShipping,
         cartTotal,
         removeFromCart,
         increaseQuantity,
-        decreaseQuantity
+        decreaseQuantity,
+        clearCart
     } = useCart();
 
     const { user } = useAuth();
     const navigate = useNavigate();
+
     const {
         enderecos,
         enderecoSelecionado,
@@ -44,30 +36,22 @@ export default function Carrinho() {
         handleEnderecoChange,
         handleSalvarEndereco,
         handleDeletarEndereco,
-        loadingEndereco,
-        erroEndereco,
-        setErroEndereco
+        loadingEndereco
     } = useEnderecos(user);
 
     const {
         cep,
         setCep,
         opcoesFrete,
-        freteSelecionado,
         loadingFrete,
-        valorFrete,
+        freteSelecionado,
         handleCalcularFrete,
         handleSelecionarFrete,
         selecionarEndereco
     } = useFrete(user);
 
-    const handleClearCart = () => {
-        console.log("Limpar carrinho clicado");
-    };
-
     const { finalizarCompra } = usePagamento(user, location);
 
-    // 🛒 Carrinho vazio
     if (cartItems.length === 0) {
         return (
             <div className="h-screen w-screen pt-24 flex items-center justify-center bg-black">
@@ -78,15 +62,17 @@ export default function Carrinho() {
         );
     }
 
-    const usuarioLogadoSemEndereco = user && enderecos.length === 0;
-
     return (
         <div className="min-h-screen w-full pt-34 md:pt-30 lg:pt-24 pb-20 px-6 bg-linear-to-r from-zinc-800 via-black to-zinc-800 text-white">
+
             <h1 className="text-2xl font-bold mb-6 text-center lg:text-left">
                 Carrinho de compras
             </h1>
+
             <div className="max-w-6xl mx-auto">
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
                     <CartItems
                         cartItems={cartItems}
                         increaseQuantity={increaseQuantity}
@@ -95,12 +81,14 @@ export default function Carrinho() {
                         navigate={navigate}
                         ClearCartButton={
                             <CartClearButton
-                                onClearCart={handleClearCart}
+                                onClearCart={clearCart}
                             />
                         }
                     />
+
                     {/* 📦 ENTREGA / RESUMO */}
                     <div className="w-full border border-zinc-700 rounded-lg p-5 space-y-6 h-fit">
+
                         {user && enderecos.length === 0 && (
                             <CartAddressForm
                                 enderecoForm={enderecoForm}
@@ -109,6 +97,7 @@ export default function Carrinho() {
                                 loadingEndereco={loadingEndereco}
                             />
                         )}
+
                         {enderecos.length > 0 && (
                             <CartAddresList
                                 enderecos={enderecos}
@@ -120,6 +109,7 @@ export default function Carrinho() {
                                 loadingFrete={loadingFrete}
                             />
                         )}
+
                         {enderecos.length === 0 && (
                             <CartCepFrete
                                 cep={cep}
@@ -128,22 +118,35 @@ export default function Carrinho() {
                                 loadingFrete={loadingFrete}
                             />
                         )}
+
                         <CartShippingOptions
                             opcoesFrete={opcoesFrete}
-                            freteSelecionado={freteSelecionado}
+                            cartShipping={cartShipping}
                             handleSelecionarFrete={handleSelecionarFrete}
                         />
+
                         <CartSummary
-                            cartTotal={cartTotal}
-                            valorFrete={valorFrete}
+                            subtotal={cartSubtotal}
+                            shipping={cartShipping}
+                            total={cartTotal}
                         />
+
                     </div>
+
                 </div>
+
                 <CartActions
                     navigate={navigate}
-                    handleFinalizarCompra={()=> finalizarCompra({enderecoSelecionado, freteSelecionado})}
+                    handleFinalizarCompra={() =>
+                        finalizarCompra({
+                            enderecoSelecionado,
+                            freteSelecionado
+                        })
+                    }
                 />
+
             </div>
+
         </div>
     );
 }

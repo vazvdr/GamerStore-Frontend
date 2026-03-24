@@ -1,21 +1,39 @@
 const API_URL = "http://localhost:8082/cart";
 
-// 📦 Adicionar produto ao carrinho
-export async function addItemToCart(userId, product) {
+export async function syncCart(userId, items) {
 
-    const response = await fetch(`${API_URL}/${userId}/items`, {
+    if (!userId) {
+        throw new Error("Usuário não informado para sincronização");
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+        return {
+            items: [],
+            subTotal: 0,
+            shippingValue: 0,
+            total: 0
+        };
+    }
+
+    const response = await fetch(`${API_URL}/${userId}/sync`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-            productId: product.id,
-            nome: product.nome,
-            descricao: product.descricao,
-            preco: product.preco,
-            quantidade: 1,
-            imageUrl: product.image
-        })
+        body: JSON.stringify(items)
+    });
+
+    if (!response.ok) {
+        throw new Error("Erro ao sincronizar carrinho");
+    }
+
+    return response.json();
+}
+
+export async function addItemToCart(userId, productId) {
+
+    const response = await fetch(`${API_URL}/${userId}/items/${productId}`, {
+        method: "POST"
     });
 
     if (!response.ok) {
@@ -25,17 +43,10 @@ export async function addItemToCart(userId, product) {
     return response.json();
 }
 
-// ➕ aumentar quantidade
 export async function increaseItemQuantity(userId, productId) {
 
-    const response = await fetch(`${API_URL}/${userId}/items/${productId}`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            action: "increase"
-        })
+    const response = await fetch(`${API_URL}/${userId}/items/${productId}/increase`, {
+        method: "PATCH"
     });
 
     if (!response.ok) {
@@ -45,17 +56,10 @@ export async function increaseItemQuantity(userId, productId) {
     return response.json();
 }
 
-// ➖ diminuir quantidade
 export async function decreaseItemQuantity(userId, productId) {
 
-    const response = await fetch(`${API_URL}/${userId}/items/${productId}`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            action: "decrease"
-        })
+    const response = await fetch(`${API_URL}/${userId}/items/${productId}/decrease`, {
+        method: "PATCH"
     });
 
     if (!response.ok) {
@@ -65,7 +69,6 @@ export async function decreaseItemQuantity(userId, productId) {
     return response.json();
 }
 
-// ❌ remover produto do carrinho
 export async function removeItemFromCart(userId, productId) {
 
     const response = await fetch(`${API_URL}/${userId}/items/${productId}`, {
@@ -79,7 +82,6 @@ export async function removeItemFromCart(userId, productId) {
     return response.json();
 }
 
-// 🧹 limpar carrinho
 export async function clearCart(userId) {
 
     const response = await fetch(`${API_URL}/${userId}`, {
@@ -90,10 +92,9 @@ export async function clearCart(userId) {
         throw new Error("Erro ao limpar carrinho");
     }
 
-    return response.json();
+    return true;
 }
 
-// 🚚 aplicar frete
 export async function applyShipping(userId, cep, tipoFrete) {
 
     const response = await fetch(`${API_URL}/${userId}/apply-shipping`, {
@@ -114,15 +115,16 @@ export async function applyShipping(userId, cep, tipoFrete) {
     return response.json();
 }
 
-// 🛒 buscar carrinho
 export async function getCart(userId) {
 
-    if (!userId) return {
-        items: [],
-        subtotal: 0,
-        shipping: null,
-        total: 0
-    };
+    if (!userId) {
+        return {
+            items: [],
+            subTotal: 0,
+            shippingValue: 0,
+            total: 0
+        };
+    }
 
     const response = await fetch(`${API_URL}/${userId}`);
 

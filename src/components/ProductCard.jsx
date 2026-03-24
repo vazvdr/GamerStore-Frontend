@@ -11,7 +11,7 @@ export default function ProductCard({ product }) {
 
     const quantidadeNoCarrinho = itemNoCarrinho?.quantidade ?? 0;
 
-    const estoqueDisponivel = Number(product.quantity) || 0;
+    const estoqueDisponivel = Number(product.stock) || 0;
 
     const estoqueMaximoAtingido =
         quantidadeNoCarrinho >= estoqueDisponivel;

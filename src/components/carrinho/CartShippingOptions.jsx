@@ -1,6 +1,6 @@
 export default function CartShippingOptions({
   opcoesFrete,
-  freteSelecionado,
+  cartShipping,
   handleSelecionarFrete
 }) {
 
@@ -21,14 +21,16 @@ export default function CartShippingOptions({
           </div>
 
           <div className="flex items-center gap-3">
+
             <span>R$ {opcao.valor.toFixed(2)}</span>
 
             <input
               type="radio"
               name="frete"
-              checked={freteSelecionado?.tipo === opcao.tipo}
+              checked={cartShipping === opcao.valor}
               onChange={() => handleSelecionarFrete(opcao)}
             />
+
           </div>
 
         </label>

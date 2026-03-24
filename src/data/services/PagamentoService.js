@@ -4,14 +4,15 @@ export async function confirmarPagamento({
     userId,
     amount,
     paymentMethodId,
-    stripeCustomerId
+    stripeCustomerId,
+    items
 }) {
-
     const payload = {
         userId,
         amount,
         paymentMethodId,
-        stripeCustomerId
+        stripeCustomerId,
+        items
     };
 
     const response = await fetch(API_URL, {

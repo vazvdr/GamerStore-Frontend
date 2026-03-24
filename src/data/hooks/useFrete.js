@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { calcularFretePorCep } from "../services/ShippingService";
 import { applyShipping } from "../services/CartService";
+import { useCart } from "../contexts/CartContext";
 
 export default function useFrete(user) {
+
+    const { loadCart } = useCart();
 
     const [cep, setCep] = useState("");
     const [opcoesFrete, setOpcoesFrete] = useState([]);
@@ -45,9 +48,16 @@ export default function useFrete(user) {
             console.warn("Usuário não logado, não é possível aplicar frete no backend");
             return;
         }
+
         try {
+
             await applyShipping(user.id, cep, opcao.tipo);
+
             setFreteSelecionado(opcao);
+
+            // Atualiza o carrinho com valores do backend
+            await loadCart();
+
         } catch (error) {
             console.error("Erro ao aplicar frete:", error);
         }

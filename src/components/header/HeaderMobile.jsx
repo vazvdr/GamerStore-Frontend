@@ -191,6 +191,7 @@ export default function HeaderMobile() {
                                     key={cat}
                                     onClick={() => {
                                         const search = cat.toLowerCase();
+                                        setMenuOpen(false)
                                         navigate(`/categoria/${search}`);
                                     }}
                                     className="py-2 text-left border-b border-zinc-800 text-white

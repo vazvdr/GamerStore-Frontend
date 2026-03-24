@@ -12,6 +12,7 @@ import PrivateRoute from "../src/routes/PrivateRoutes";
 import RecuperarSenha from "./pages/RecuperarSenha";
 import Pagamento from "./pages/Pagamento";
 import PagamentoSucesso from "./pages/PagamentoSucesso";
+import Pedidos from "./pages/Pedidos";
 
 function App() {
   return (
@@ -60,6 +61,11 @@ function App() {
         <Route
           path="/pagamento-sucesso"
           element={<PagamentoSucesso />}
+        />
+        
+        <Route
+          path="/pedidos"
+          element={<Pedidos />}
         />
       </Routes>
 

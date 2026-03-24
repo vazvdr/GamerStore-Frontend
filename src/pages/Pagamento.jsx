@@ -1,6 +1,6 @@
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../data/contexts/AuthContext";
 import { useCart } from "../data/contexts/CartContext";
-import { useLocation } from "react-router-dom";
 import { usePagamento } from "../data/hooks/usePagamentos";
 
 import InformacoesEntrega from "@/components/pagamento/InformacoesEntrega";
@@ -8,7 +8,7 @@ import ResumoPedido from "@/components/pagamento/ResumoPedido";
 import FormaPagamento from "@/components/pagamento/FormaPagamento";
 import DialogLojaFicticia from "@/components/pagamento/DialogLojaFicticia";
 
-// 🔥 shadcn
+// shadcn
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
     AlertDialog,
@@ -26,10 +26,10 @@ export default function Pagamento() {
     const { cartItems } = useCart();
     const location = useLocation();
 
-    const enderecoSelecionado = location.state?.enderecoSelecionado;
-    const freteSelecionado = location.state?.freteSelecionado;
+    const enderecoSelecionado = location.state?.endereco || null;
+    const freteSelecionado = location.state?.frete || null;
 
-    const pagamento = usePagamento(user, location);
+    const pagamento = usePagamento(user, cartItems);
 
     if (loading || pagamento.loadingCart) {
         return (
@@ -46,14 +46,10 @@ export default function Pagamento() {
 
     return (
         <div className="min-h-screen bg-black text-white pt-32 pb-10 px-4 md:px-12">
-
             <div className="max-w-7xl mx-auto">
-
                 <h1 className="text-3xl font-bold mb-6">
                     Finalizar Pagamento
                 </h1>
-
-                {/* 🔥 ALERT SIMPLES */}
                 {pagamento.alert && (
                     <div className="mb-6">
                         <Alert
@@ -69,17 +65,13 @@ export default function Pagamento() {
                         </Alert>
                     </div>
                 )}
-
                 <div className="flex flex-col lg:flex-row gap-10">
-
                     <div className="flex-1 space-y-8">
-
                         <InformacoesEntrega
                             user={user}
                             enderecoSelecionado={enderecoSelecionado}
                             freteSelecionado={freteSelecionado}
                         />
-
                         <ResumoPedido
                             cartItems={cartItems}
                             subtotal={subtotal}
@@ -87,7 +79,6 @@ export default function Pagamento() {
                             freteSelecionado={freteSelecionado}
                             isMobile
                         />
-
                         <FormaPagamento
                             metodoPagamento={pagamento.metodoPagamento}
                             setMetodoPagamento={pagamento.setMetodoPagamento}
@@ -100,20 +91,16 @@ export default function Pagamento() {
                             handleConfirmarPagamento={pagamento.handleConfirmarPagamento}
                             handleCardFocus={pagamento.handleCardFocus}
                         />
-
                     </div>
-
                     <ResumoPedido
                         cartItems={cartItems}
                         subtotal={subtotal}
                         backendTotal={pagamento.backendTotal}
                         freteSelecionado={freteSelecionado}
                     />
-
                 </div>
             </div>
 
-            {/* 🔥 ALERT DIALOG */}
             <AlertDialog
                 open={pagamento.alertDialog.open}
                 onOpenChange={(open) =>

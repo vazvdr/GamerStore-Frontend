@@ -7,6 +7,11 @@ export default function CartItem({
   removeFromCart,
   navigate
 }) {
+
+  // Bloqueios de botões
+  const estoqueMaximoAtingido = produto.quantity !== undefined && produto.quantidade >= produto.quantity;
+  const quantidadeMinima = produto.quantidade <= 1;
+
   return (
     <li
       className="
@@ -42,12 +47,13 @@ export default function CartItem({
 
       <div className="flex flex-col items-end gap-2 md:flex-row md:items-center md:gap-4">
 
+        {/* Botão de aumentar */}
         <button
           onClick={() => increaseQuantity(produto.id)}
-          disabled={produto.quantidade >= produto.estoque}
+          disabled={estoqueMaximoAtingido}
           className={`px-2 rounded border border-lime-400 cursor-pointer
-            ${produto.quantidade >= produto.estoque
-              ? "bg-zinc-700 opacity-50"
+    ${estoqueMaximoAtingido
+              ? "bg-zinc-700 opacity-50 cursor-not-allowed"
               : "bg-zinc-800 hover:bg-zinc-700"
             }`}
         >
@@ -56,13 +62,20 @@ export default function CartItem({
 
         <span>{produto.quantidade}</span>
 
+        {/* Botão de diminuir */}
         <button
           onClick={() => decreaseQuantity(produto.id)}
-          className="px-2 bg-zinc-800 rounded border border-lime-400 cursor-pointer"
+          disabled={quantidadeMinima}
+          className={`px-2 rounded border border-lime-400 cursor-pointer
+            ${quantidadeMinima
+              ? "bg-zinc-700 opacity-50 cursor-not-allowed"
+              : "bg-zinc-800 hover:bg-zinc-700"
+            }`}
         >
           -
         </button>
 
+        {/* Botão de remover */}
         <button
           onClick={() => removeFromCart(produto.id)}
           className="text-red-500 hover:scale-105 cursor-pointer"

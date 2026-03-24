@@ -50,7 +50,6 @@ export default function Conta() {
 
     return (
         <>
-            {/* ================= MODAL FEEDBACK ================= */}
             <AlertDialog
                 open={conta.dialogOpen}
                 onOpenChange={conta.setDialogOpen}
@@ -86,7 +85,6 @@ export default function Conta() {
 
                 <div className="w-full max-w-6xl flex flex-col gap-10">
 
-                    {/* ================= ACCORDIONS ================= */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                         {/* CONTA */}
