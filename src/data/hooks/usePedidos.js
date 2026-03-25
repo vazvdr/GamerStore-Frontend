@@ -11,7 +11,10 @@ export function usePedidos(user, token) {
         async function loadOrders() {
             try {
                 const data = await getOrdersByUser(user.id, token);
-                setOrders(data);
+                const sorted = data.sort((a, b) =>
+                    new Date(b.createdAt) - new Date(a.createdAt)
+                );
+                setOrders(sorted);
             } catch (error) {
                 console.error("Erro ao carregar pedidos", error);
             } finally {
@@ -22,7 +25,6 @@ export function usePedidos(user, token) {
         if (user?.id) {
             loadOrders();
         }
-
     }, [user, token]);
 
     return {
