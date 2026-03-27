@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ProductService } from "../services/ProductService";
 
-// Normaliza texto: minusculas + remove acentos + trim
+// Normaliza texto
 function normalizeText(text) {
     return text
         .toLowerCase()
@@ -10,7 +10,7 @@ function normalizeText(text) {
         .trim();
 }
 
-// Mapeamento das categorias do header → tags reais do banco
+// Categorias → tags do banco
 const categoryMap = {
     "notebooks": ["notebook"],
     "processadores": ["processador"],
@@ -23,7 +23,7 @@ const categoryMap = {
     "video games": ["console"]
 };
 
-export function useProducts({ id = null, search = null } = {}) {
+export function useProducts({ id = null, search = null, isSearch = false } = {}) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -39,26 +39,29 @@ export function useProducts({ id = null, search = null } = {}) {
                 let result;
 
                 if (id) {
-                    // Busca por ID
                     result = await ProductService.getById(id);
 
-                    // Caso backend retorne array, pega o primeiro item
                     if (Array.isArray(result)) {
                         result = result[0] || null;
                     }
+
+                } else if (search && isSearch) {
+                    result = await ProductService.search(search);
+
                 } else {
                     const allProducts = await ProductService.getAll();
 
                     if (search) {
                         const normalizedSearch = normalizeText(search);
 
-                        // Obtém as tags mapeadas da categoria
-                        const tagsToSearch = categoryMap[normalizedSearch] || [normalizedSearch];
+                        const tagsToSearch =
+                            categoryMap[normalizedSearch] || [normalizedSearch];
 
-                        // Filtra produtos comparando tags normalizadas
                         result = allProducts.filter(product => {
                             const productTag = normalizeText(product.tags || "");
-                            return tagsToSearch.some(tag => productTag === normalizeText(tag));
+                            return tagsToSearch.some(tag =>
+                                productTag === normalizeText(tag)
+                            );
                         });
                     } else {
                         result = allProducts;
@@ -78,7 +81,7 @@ export function useProducts({ id = null, search = null } = {}) {
         return () => {
             isMounted = false;
         };
-    }, [id, search]);
+    }, [id, search, isSearch]);
 
     return { data, loading, error };
 }

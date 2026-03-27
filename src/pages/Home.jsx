@@ -37,7 +37,7 @@ export default function Home() {
         ">
 
             {/* CARROSSEL */}
-            <div className="mb-4 md:mb-8">
+            <div className="mb-4 mt-16 md:mb-8 relative overflow-hidden">
                 <Carousel
                     images={banners}
                     autoPlay

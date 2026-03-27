@@ -1,12 +1,12 @@
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useProducts } from "../data/hooks/useProducts";
 import ProductCard from "../components/ProductCard";
 import { HoverEffect } from "../components/ui/card-hover-effect";
 
-// Normaliza texto: minusculas + remove acentos + trim
+// Normaliza texto
 function normalizeText(text) {
     return text
-        .toLowerCase()
+        ?.toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .trim();
@@ -14,9 +14,13 @@ function normalizeText(text) {
 
 export default function Categoria() {
     const { slug } = useParams();
+    const [searchParams] = useSearchParams();
 
-    // Normaliza categoria da URL
-    const search = normalizeText(slug.replace(/-/g, " "));
+    const queryParam = searchParams.get("q");
+
+    const search = normalizeText(
+        queryParam || slug?.replace(/-/g, " ")
+    );
 
     const { data: products, loading, error } = useProducts({ search });
 
@@ -47,12 +51,14 @@ export default function Categoria() {
             "
         >
             <h1 className="text-2xl font-bold mb-6 capitalize text-center">
-                Categoria: {search}
+                {queryParam
+                    ? `Resultados para: ${search}`
+                    : `Categoria: ${search}`}
             </h1>
 
             {products?.length === 0 && (
-                <p className="text-zinc-300">
-                    Nenhum produto encontrado para essa categoria.
+                <p className="text-zinc-300 text-center">
+                    Nenhum produto encontrado.
                 </p>
             )}
 

@@ -32,11 +32,11 @@ export default function Carousel({
 
     return (
         <div className="relative w-full flex justify-center mb-12">
-            <div className="w-[96%] max-w-7xl relative overflow-hidden rounded-2xl shadow-2xl">
+            <div className="w-[96%] max-w-7xl relative overflow-hidden rounded-2xl shadow-2xl aspect-[1024/275]">
 
                 {/* Slides */}
                 <div
-                    className="flex transition-transform duration-700 ease-in-out"
+                    className="flex transition-transform duration-700 ease-in-out h-full"
                     style={{ transform: `translateX(-${current * 100}%)` }}
                 >
                     {images.map((image, index) => (
@@ -44,7 +44,7 @@ export default function Carousel({
                             key={index}
                             src={image}
                             alt={`Slide ${index}`}
-                            className={`w-full ${height} object-contain flex-shrink-0`}
+                            className="w-full h-full object-contain flex-shrink-0"
                         />
                     ))}
                 </div>
@@ -68,14 +68,14 @@ export default function Carousel({
                 </button>
 
                 {/* Indicadores */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                <div className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                     {images.map((_, index) => (
                         <div
                             key={index}
                             onClick={() => setCurrent(index)}
-                            className={`w-3 h-3 rounded-full cursor-pointer transition ${
+                            className={`w-2 h-2 md:w-3 md:h-3 rounded-full cursor-pointer transition ${
                                 current === index
-                                    ? 'bg-white'
+                                    ? 'bg-white scale-110'
                                     : 'bg-white/40'
                             }`}
                         />

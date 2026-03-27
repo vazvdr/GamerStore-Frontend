@@ -1,7 +1,6 @@
 import {
     Search,
     ShoppingCart,
-    Sun,
     ArrowUp
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -10,6 +9,7 @@ import LogoTexto from "../../assets/logo-texto.png";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../data/contexts/AuthContext";
 import { useCart } from "../../data/contexts/CartContext";
+import { ProductService } from "../../data/services/ProductService";
 
 import {
     DropdownMenu,
@@ -39,6 +39,10 @@ export default function HeaderMedium() {
 
     const [showScrollTop, setShowScrollTop] = useState(false);
 
+    const [search, setSearch] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+
     useEffect(() => {
         const handleScroll = () => {
             setShowScrollTop(window.scrollY > 300);
@@ -47,6 +51,42 @@ export default function HeaderMedium() {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    useEffect(() => {
+        const delay = setTimeout(async () => {
+            if (!search.trim()) {
+                setSuggestions([]);
+                return;
+            }
+
+            try {
+                const result = await ProductService.search(search);
+                setSuggestions(result.slice(0, 5));
+                setShowSuggestions(true);
+            } catch (err) {
+                console.error("Erro autocomplete:", err);
+            }
+        }, 300);
+
+        return () => clearTimeout(delay);
+    }, [search]);
+
+    const handleSearch = () => {
+        if (!search.trim()) return;
+
+        navigate(`/pesquisa?q=${encodeURIComponent(search)}`);
+
+        // limpeza
+        setSearch("");
+        setSuggestions([]);
+        setShowSuggestions(false);
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            handleSearch();
+        }
+    };
 
     return (
         <>
@@ -59,20 +99,23 @@ export default function HeaderMedium() {
                             onClick={() => navigate("/")}
                             className="flex items-center gap-2 cursor-pointer"
                         >
-                            <img
-                                src={Logo}
-                                alt="GamerStore"
-                                className="h-16 object-contain"
-                            />
-                            <img
-                                src={LogoTexto}
-                                alt="GamerStore"
-                                className="h-16 w-60 object-contain"
-                            />
+                            <img src={Logo} alt="GamerStore" className="h-16 object-contain" />
+                            <img src={LogoTexto} alt="GamerStore" className="h-16 w-60 object-contain" />
                         </button>
 
-                        <div className="flex">
+                        {/* 🔍 BUSCA */}
+                        <div className="relative flex">
                             <input
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                onFocus={() => setShowSuggestions(true)}
+                                onBlur={() => {
+                                    setTimeout(() => {
+                                        setShowSuggestions(false);
+                                        setSuggestions([]);
+                                    }, 200);
+                                }}
                                 placeholder="Buscar produtos..."
                                 className="px-4 py-2
                                 border-b border-l border-lime-400
@@ -83,15 +126,40 @@ export default function HeaderMedium() {
                             />
 
                             <button
-                                className="px-2
-                                border-b border-lime-400
-                                cursor-pointer
-                                flex items-center
-                            "
+                                onClick={handleSearch}
+                                className="px-2 border-b border-lime-400 cursor-pointer flex items-center"
                             >
                                 <Search size={18} />
                             </button>
 
+                            {/* 🔥 AUTOCOMPLETE */}
+                            {showSuggestions && suggestions.length > 0 && (
+                                <div className="
+                                    absolute top-full left-0 w-full
+                                    bg-black border border-zinc-700
+                                    rounded-md mt-1 z-50
+                                ">
+                                    {suggestions.map((product) => (
+                                        <div
+                                            key={product.id}
+                                            onClick={() => {
+                                                navigate(`/produto/${product.id}`);
+
+                                                setSearch("");
+                                                setSuggestions([]);
+                                                setShowSuggestions(false);
+                                            }}
+                                            className="px-4 py-2 cursor-pointer hover:bg-zinc-800 text-sm"
+                                        >
+                                            {product.name}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* USER / CART */}
+                        <div className="flex items-center gap-1">
                             {!user ? (
                                 <button
                                     onClick={() => navigate("/login")}
@@ -102,16 +170,12 @@ export default function HeaderMedium() {
                             ) : (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <button className="px-3 py-2 bg-zinc-800 rounded-lg 
-                                        text-sm max-w-32 truncate cursor-pointer">
+                                        <button className="px-3 py-2 bg-zinc-800 rounded-lg text-sm max-w-32 truncate cursor-pointer">
                                             {user.nome}
                                         </button>
                                     </DropdownMenuTrigger>
 
-                                    <DropdownMenuContent
-                                        align="end"
-                                        className="bg-black text-white"
-                                    >
+                                    <DropdownMenuContent align="end" className="bg-black text-white">
                                         <DropdownMenuLabel className="flex flex-col">
                                             <span>{user.nome}</span>
                                             <span className="text-xs text-zinc-400">
@@ -166,7 +230,7 @@ export default function HeaderMedium() {
                         </div>
                     </div>
 
-                    {/* CATEGORIAS (MD < LG) */}
+                    {/* CATEGORIAS */}
                     <nav className="flex justify-between mt-2 text-sm font-bold text-zinc-300">
                         {categorias.map(cat => (
                             <button
@@ -184,18 +248,13 @@ export default function HeaderMedium() {
                 </div>
             </header>
 
-            {/* 🔝 BOTÃO VOLTAR AO TOPO */}
+            {/* 🔝 SCROLL */}
             {showScrollTop && (
                 <button
                     onClick={() =>
                         window.scrollTo({ top: 0, behavior: "smooth" })
                     }
-                    className="
-                        fixed bottom-14 right-6 z-50
-                        p-2 bg-white text-black
-                        rounded-md cursor-pointer
-                        shadow-lg
-                    "
+                    className="fixed bottom-14 right-6 z-50 p-2 bg-white text-black rounded-md cursor-pointer shadow-lg"
                 >
                     <ArrowUp size={20} />
                 </button>

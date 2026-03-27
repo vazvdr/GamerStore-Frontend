@@ -1,10 +1,11 @@
-import { Search, ShoppingCart, Sun, Moon, ArrowUp } from "lucide-react";
+import { Search, ShoppingCart, ArrowUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import Logo from "../../assets/logo.png";
 import LogoTexto from "../../assets/logo-texto.png";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../data/contexts/AuthContext";
 import { useCart } from "../../data/contexts/CartContext";
+import { ProductService } from "../../data/services/ProductService";
 
 import {
     DropdownMenu,
@@ -26,6 +27,10 @@ export default function HeaderDesktop() {
     const { cartCount } = useCart();
 
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [search, setSearch] = useState("");
+
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -35,6 +40,42 @@ export default function HeaderDesktop() {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    useEffect(() => {
+        const delayDebounce = setTimeout(async () => {
+            if (!search.trim()) {
+                setSuggestions([]);
+                return;
+            }
+
+            try {
+                const result = await ProductService.search(search);
+
+                setSuggestions(result.slice(0, 5)); // limita 5 sugestões
+                setShowSuggestions(true);
+            } catch (err) {
+                console.error("Erro no autocomplete:", err);
+            }
+        }, 300);
+
+        return () => clearTimeout(delayDebounce);
+    }, [search]);
+
+    const handleSearch = () => {
+        if (!search.trim()) return;
+
+        navigate(`/pesquisa?q=${encodeURIComponent(search)}`);
+        setSearch("");
+        setSuggestions([]);
+        setShowSuggestions(false);
+    };
+
+    // 🔍 Enter
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            handleSearch();
+        }
+    };
 
     return (
         <>
@@ -47,27 +88,15 @@ export default function HeaderDesktop() {
                             onClick={() => navigate("/")}
                             className="flex items-center gap-2 shrink-0 cursor-pointer"
                         >
-                            <img
-                                src={Logo}
-                                alt="GamerStore"
-                                className="h-14 object-contain"
-                            />
-                            <img
-                                src={LogoTexto}
-                                alt="GamerStore"
-                                className="h-5 w-55 object-contain"
-                            />
+                            <img src={Logo} alt="GamerStore" className="h-14 object-contain" />
+                            <img src={LogoTexto} alt="GamerStore" className="h-5 w-55 object-contain" />
                         </button>
 
-                        {/* CATEGORIAS CENTRALIZADAS (1 OU 2 LINHAS) */}
-                        <nav
-                            className="flex-1
-                            flex flex-wrap
-                            justify-center
-                            gap-x-4 gap-y-1
-                            text-sm font-bold
-                            text-zinc-300
-                            px-4
+                        {/* CATEGORIAS */}
+                        <nav className="
+                            flex-1 flex flex-wrap justify-center
+                            gap-x-4 gap-y-1 text-sm font-bold
+                            text-zinc-300 px-4
                         ">
                             {categorias.map(cat => (
                                 <button
@@ -76,27 +105,63 @@ export default function HeaderDesktop() {
                                         const search = cat.toLowerCase();
                                         navigate(`/categoria/${search}`);
                                     }}
-                                    className="hover:text-lime-400 transition
-                                    whitespace-nowrap cursor-pointer"
+                                    className="hover:text-lime-400 transition whitespace-nowrap cursor-pointer"
                                 >
                                     {cat}
                                 </button>
                             ))}
-
                         </nav>
-
 
                         {/* AÇÕES */}
                         <div className="flex items-center gap-1 shrink-0">
-                            <div className="flex">
+
+                            {/* 🔍 BUSCA */}
+                            <div className="relative flex">
                                 <input
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    onFocus={() => setShowSuggestions(true)}
+                                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                                     placeholder="Buscar produtos..."
                                     className="px-4 py-2 border-b border-l border-lime-400 bg-transparent 
                                     rounded-bl-md outline-ring-white text-sm"
                                 />
-                                <button className="px-2 border-b border-lime-400 cursor-pointer">
+
+                                <button
+                                    onClick={handleSearch}
+                                    className="px-2 border-b border-lime-400 cursor-pointer"
+                                >
                                     <Search size={18} />
                                 </button>
+
+                                {/* 🔥 AUTOCOMPLETE */}
+                                {showSuggestions && suggestions.length > 0 && (
+                                    <div className="
+                                        absolute top-full left-0 w-full
+                                        bg-black border border-zinc-700
+                                        rounded-md mt-1 z-50
+                                    ">
+                                        {suggestions.map((product) => (
+                                            <div
+                                                key={product.id}
+                                                onClick={() => {
+                                                    navigate(`/produto/${product.id}`);
+                                                    setSearch("");
+                                                    setSuggestions([]);
+                                                    setShowSuggestions(false);
+                                                }}
+                                                className="
+                                                    px-4 py-2 cursor-pointer
+                                                    hover:bg-zinc-800
+                                                    text-sm
+                                                "
+                                            >
+                                                {product.name}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             {!user ? (
@@ -129,15 +194,19 @@ export default function HeaderDesktop() {
 
                                         <DropdownMenuSeparator className="bg-lime-400" />
 
-                                        <DropdownMenuItem onClick={() => navigate("/conta")}
-                                            className="cursor-pointer hover:bg-zinc-800">
+                                        <DropdownMenuItem
+                                            onClick={() => navigate("/conta")}
+                                            className="cursor-pointer hover:bg-zinc-800"
+                                        >
                                             Conta
                                         </DropdownMenuItem>
 
                                         <DropdownMenuSeparator className="bg-white" />
 
-                                        <DropdownMenuItem onClick={() => navigate("/pedidos")}
-                                            className="cursor-pointer hover:bg-zinc-800">
+                                        <DropdownMenuItem
+                                            onClick={() => navigate("/pedidos")}
+                                            className="cursor-pointer hover:bg-zinc-800"
+                                        >
                                             Meus pedidos
                                         </DropdownMenuItem>
 
@@ -156,6 +225,7 @@ export default function HeaderDesktop() {
                                 </DropdownMenu>
                             )}
 
+                            {/* 🛒 CARRINHO */}
                             <button
                                 onClick={() => navigate("/carrinho")}
                                 className="relative p-2 cursor-pointer"
@@ -177,7 +247,7 @@ export default function HeaderDesktop() {
                 </div>
             </header>
 
-            {/* 🔝 BOTÃO SCROLL TO TOP */}
+            {/* 🔝 SCROLL TOP */}
             {showScrollTop && (
                 <button
                     onClick={() =>

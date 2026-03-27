@@ -13,6 +13,7 @@ import RecuperarSenha from "./pages/RecuperarSenha";
 import Pagamento from "./pages/Pagamento";
 import PagamentoSucesso from "./pages/PagamentoSucesso";
 import Pedidos from "./pages/Pedidos";
+import Pesquisa from "./pages/Pesquisa";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/produto/:id" element={<Produto />} />
         <Route path="/categoria/:slug" element={<Categoria />} />
+        <Route path="/pesquisa" element={<Pesquisa />} />
 
         <Route
           path="/carrinho"
@@ -60,12 +62,20 @@ function App() {
 
         <Route
           path="/pagamento-sucesso"
-          element={<PagamentoSucesso />}
+          element={
+            <PrivateRoute>
+              <PagamentoSucesso />
+            </PrivateRoute>
+          }
         />
-        
+
         <Route
           path="/pedidos"
-          element={<Pedidos />}
+          element={
+            <PrivateRoute>
+              <Pedidos />
+            </PrivateRoute>
+          }
         />
       </Routes>
 

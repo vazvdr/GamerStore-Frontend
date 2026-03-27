@@ -1,7 +1,6 @@
 import {
     Search,
     ShoppingCart,
-    Sun,
     Menu,
     X,
     ArrowUp
@@ -12,6 +11,8 @@ import LogoTexto from "../../assets/logo-texto.png";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../data/contexts/AuthContext";
 import { useCart } from "../../data/contexts/CartContext";
+import { ProductService } from "../../data/services/ProductService";
+
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -30,6 +31,11 @@ export default function HeaderMobile() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false);
 
+    const [search, setSearch] = useState("");
+
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+
     const navigate = useNavigate();
     const { user, logout } = useAuth();
     const { cartCount } = useCart();
@@ -40,6 +46,40 @@ export default function HeaderMobile() {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
+    useEffect(() => {
+        const delay = setTimeout(async () => {
+            if (!search.trim()) {
+                setSuggestions([]);
+                return;
+            }
+
+            try {
+                const result = await ProductService.search(search);
+                setSuggestions(result.slice(0, 5));
+                setShowSuggestions(true);
+            } catch (err) {
+                console.error(err);
+            }
+        }, 300);
+
+        return () => clearTimeout(delay);
+    }, [search]);
+
+    const handleSearch = () => {
+        if (!search.trim()) return;
+
+        navigate(`/pesquisa?q=${encodeURIComponent(search)}`);
+
+        setSearch(""); // 🔥 limpa input
+        setShowSuggestions(false);
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            handleSearch();
+        }
+    };
+
     return (
         <>
             <header className="fixed top-0 left-0 w-full z-50 bg-transparent backdrop-blur-lg text-white">
@@ -48,21 +88,12 @@ export default function HeaderMobile() {
                     {/* TOPO */}
                     <div className="flex items-center justify-between gap-2">
 
-                        {/* LOGO */}
                         <button
                             onClick={() => navigate("/")}
                             className="flex items-center gap-2 cursor-pointer"
                         >
-                            <img
-                                src={Logo}
-                                alt="GamerStore"
-                                className="h-14 object-contain"
-                            />
-                            <img
-                                src={LogoTexto}
-                                alt="GamerStore"
-                                className="h-14 w-45 object-contain"
-                            />
+                            <img src={Logo} className="h-14 object-contain" />
+                            <img src={LogoTexto} className="h-14 w-45 object-contain" />
                         </button>
 
                         <div className="flex items-center gap-1">
@@ -82,12 +113,7 @@ export default function HeaderMobile() {
                                         </button>
                                     </DropdownMenuTrigger>
 
-                                    <DropdownMenuContent
-                                        align="end"
-                                        side="bottom"
-                                        collisionPadding={8}
-                                        className="bg-black text-white mr-2"
-                                    >
+                                    <DropdownMenuContent className="bg-black text-white mr-2">
                                         <DropdownMenuLabel>
                                             <div className="flex flex-col">
                                                 <span>{user.nome}</span>
@@ -99,26 +125,22 @@ export default function HeaderMobile() {
 
                                         <DropdownMenuSeparator className="bg-lime-400" />
 
-                                        <DropdownMenuItem
-                                            onClick={() => navigate("/conta")}
-                                            className="cursor-pointer hover:bg-zinc-800"
-                                        >
+                                        <DropdownMenuItem onClick={() => navigate("/conta")}
+                                            className="hover:bg-zinc-800 cursor-pointer">
                                             Conta
                                         </DropdownMenuItem>
 
-                                        <DropdownMenuSeparator className="bg-white" />
+                                        <DropdownMenuSeparator className="border-b border-white" />
 
-                                        <DropdownMenuItem
-                                            onClick={() => navigate("/pedidos")}
-                                            className="cursor-pointer hover:bg-zinc-800"
-                                        >
+                                        <DropdownMenuItem onClick={() => navigate("/pedidos")}
+                                            className="hover:bg-zinc-800 cursor-pointer">
                                             Meus pedidos
                                         </DropdownMenuItem>
 
-                                        <DropdownMenuSeparator className="bg-white" />
+                                        <DropdownMenuSeparator className="border-b border-white" />
 
                                         <DropdownMenuItem
-                                            className="text-red-500 cursor-pointer hover:bg-zinc-800"
+                                            className="text-red-500 hover:bg-zinc-800 cursor-pointer"
                                             onClick={() => {
                                                 logout();
                                                 navigate("/");
@@ -132,7 +154,7 @@ export default function HeaderMobile() {
 
                             <button
                                 onClick={() => navigate("/carrinho")}
-                                className="relative p-2 cursor-pointer"
+                                className="relative p-2"
                             >
                                 <ShoppingCart size={22} />
                                 {cartCount > 0 && (
@@ -142,45 +164,63 @@ export default function HeaderMobile() {
                                 )}
                             </button>
 
-                            <button
-                                onClick={() => setMenuOpen(true)}
-                                className="cursor-pointer"
-                            >
+                            <button onClick={() => setMenuOpen(true)}>
                                 <Menu size={26} />
                             </button>
                         </div>
                     </div>
 
-                    {/* 🔹 LINHA SEPARADORA */}
                     <div className="my-2 h-0.5 w-full bg-lime-400 rounded-full" />
 
-                    {/* BUSCA */}
-                    <div className="flex">
+                    {/* 🔍 BUSCA */}
+                    <div className="relative flex">
                         <input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            onFocus={() => setShowSuggestions(true)}
+                            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                             placeholder="Buscar produtos..."
                             className="flex-1 px-4 py-2 border-b border-lime-400 bg-transparent outline-none"
                         />
-                        <button className="px-3 border-b border-lime-400 cursor-pointer">
+
+                        <button onClick={handleSearch} className="px-3 border-b border-lime-400">
                             <Search size={18} />
                         </button>
+
+                        {/* 🔥 AUTOCOMPLETE */}
+                        {showSuggestions && suggestions.length > 0 && (
+                            <div className="absolute top-full left-0 w-full bg-black border border-zinc-700 mt-1 z-50 rounded-md">
+                                {suggestions.map((p) => (
+                                    <div
+                                        key={p.id}
+                                        onClick={() => {
+                                            navigate(`/produto/${p.id}`);
+                                            setSearch(""); // 🔥 limpa
+                                            setShowSuggestions(false);
+                                        }}
+                                        className="px-4 py-2 hover:bg-zinc-800 cursor-pointer text-sm"
+                                    >
+                                        {p.name}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </header>
 
-            {/* MENU LATERAL */}
+            {/* MENU */}
             {menuOpen && (
                 <>
                     <div
                         onClick={() => setMenuOpen(false)}
-                        className="fixed inset-0 bg-black/90 z-40 cursor-pointer"
+                        className="fixed inset-0 bg-black/90 z-40"
                     />
-                    <aside className="fixed top-0 right-0 z-50 h-screen w-72 bg-black">
+                    <aside className="fixed top-0 right-0 z-50 h-screen w-72 bg-black text-white">
                         <div className="flex justify-between p-4 border-b border-zinc-800">
-                            <span className="font-bold text-white">Categorias</span>
-                            <button
-                                className="text-white cursor-pointer"
-                                onClick={() => setMenuOpen(false)}
-                            >
+                            <span>Categorias</span>
+                            <button onClick={() => setMenuOpen(false)}>
                                 <X size={22} />
                             </button>
                         </div>
@@ -190,12 +230,10 @@ export default function HeaderMobile() {
                                 <button
                                     key={cat}
                                     onClick={() => {
-                                        const search = cat.toLowerCase();
-                                        setMenuOpen(false)
-                                        navigate(`/categoria/${search}`);
+                                        setMenuOpen(false);
+                                        navigate(`/categoria/${cat.toLowerCase()}`);
                                     }}
-                                    className="py-2 text-left border-b border-zinc-800 text-white
-                                    hover:bg-zinc-800 hover:text-lime-400 cursor-pointer"
+                                    className="py-2 text-left border-b border-zinc-800 hover:bg-zinc-800 cursor-pointer"
                                 >
                                     {cat}
                                 </button>
@@ -208,7 +246,8 @@ export default function HeaderMobile() {
             {showScrollTop && (
                 <button
                     onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                    className="fixed bottom-14 right-6 z-50 p-2 bg-white text-black rounded-md cursor-pointer"
+                    className="fixed bottom-14 right-6 z-50 p-2 bg-white text-black rounded-md
+                    cursor-pointer"
                 >
                     <ArrowUp size={20} />
                 </button>

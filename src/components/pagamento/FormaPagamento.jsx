@@ -41,25 +41,6 @@ export default function FormaPagamento({
                     />
                     <span>Cartão de Crédito</span>
                 </label>
-
-                {/* PIX */}
-                <label
-                    className={`flex items-center gap-3 p-4 bg-zinc-800 rounded-lg border cursor-pointer transition
-                        ${metodoPagamento === "pix"
-                            ? "border-lime-400"
-                            : "border-zinc-600 hover:border-lime-400"
-                        }`}
-                >
-                    <input
-                        type="radio"
-                        name="pagamento"
-                        value="pix"
-                        checked={metodoPagamento === "pix"}
-                        onChange={(e) => setMetodoPagamento(e.target.value)}
-                    />
-                    <span>Pix</span>
-                </label>
-
             </div>
 
             {metodoPagamento === "cartao" && (
