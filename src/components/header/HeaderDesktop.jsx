@@ -51,7 +51,7 @@ export default function HeaderDesktop() {
             try {
                 const result = await ProductService.search(search);
 
-                setSuggestions(result.slice(0, 5)); // limita 5 sugestões
+                setSuggestions(result.slice(0, 5));
                 setShowSuggestions(true);
             } catch (err) {
                 console.error("Erro no autocomplete:", err);
@@ -70,7 +70,6 @@ export default function HeaderDesktop() {
         setShowSuggestions(false);
     };
 
-    // 🔍 Enter
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
             handleSearch();
@@ -141,6 +140,7 @@ export default function HeaderDesktop() {
                                         absolute top-full left-0 w-full
                                         bg-black border border-zinc-700
                                         rounded-md mt-1 z-50
+                                        max-h-80 overflow-y-auto
                                     ">
                                         {suggestions.map((product) => (
                                             <div
@@ -152,12 +152,29 @@ export default function HeaderDesktop() {
                                                     setShowSuggestions(false);
                                                 }}
                                                 className="
+                                                    flex items-center gap-3
                                                     px-4 py-2 cursor-pointer
                                                     hover:bg-zinc-800
                                                     text-sm
                                                 "
                                             >
-                                                {product.name}
+                                                {/* 🖼️ IMAGEM */}
+                                                <img
+                                                    src={product.imageUrl || "/placeholder.png"}
+                                                    alt={product.name}
+                                                    className="w-12 h-12 object-cover rounded-md border border-zinc-700"
+                                                />
+
+                                                {/* 📝 INFO */}
+                                                <div className="flex flex-col overflow-hidden">
+                                                    <span className="font-medium truncate">
+                                                        {product.name}
+                                                    </span>
+
+                                                    <span className="text-xs text-zinc-400 truncate">
+                                                        {product.description?.slice(0, 60)}...
+                                                    </span>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>

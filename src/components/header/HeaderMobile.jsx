@@ -32,7 +32,6 @@ export default function HeaderMobile() {
     const [showScrollTop, setShowScrollTop] = useState(false);
 
     const [search, setSearch] = useState("");
-
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -70,7 +69,8 @@ export default function HeaderMobile() {
 
         navigate(`/pesquisa?q=${encodeURIComponent(search)}`);
 
-        setSearch(""); // 🔥 limpa input
+        setSearch("");
+        setSuggestions([]);
         setShowSuggestions(false);
     };
 
@@ -125,15 +125,19 @@ export default function HeaderMobile() {
 
                                         <DropdownMenuSeparator className="bg-lime-400" />
 
-                                        <DropdownMenuItem onClick={() => navigate("/conta")}
-                                            className="hover:bg-zinc-800 cursor-pointer">
+                                        <DropdownMenuItem
+                                            onClick={() => navigate("/conta")}
+                                            className="hover:bg-zinc-800 cursor-pointer"
+                                        >
                                             Conta
                                         </DropdownMenuItem>
 
                                         <DropdownMenuSeparator className="border-b border-white" />
 
-                                        <DropdownMenuItem onClick={() => navigate("/pedidos")}
-                                            className="hover:bg-zinc-800 cursor-pointer">
+                                        <DropdownMenuItem
+                                            onClick={() => navigate("/pedidos")}
+                                            className="hover:bg-zinc-800 cursor-pointer"
+                                        >
                                             Meus pedidos
                                         </DropdownMenuItem>
 
@@ -190,18 +194,44 @@ export default function HeaderMobile() {
 
                         {/* 🔥 AUTOCOMPLETE */}
                         {showSuggestions && suggestions.length > 0 && (
-                            <div className="absolute top-full left-0 w-full bg-black border border-zinc-700 mt-1 z-50 rounded-md">
+                            <div className="
+                                absolute top-full left-0 w-full
+                                bg-black border border-zinc-700 mt-1 z-50 rounded-md
+                                max-h-80 overflow-y-auto
+                            ">
                                 {suggestions.map((p) => (
                                     <div
                                         key={p.id}
                                         onClick={() => {
                                             navigate(`/produto/${p.id}`);
-                                            setSearch(""); // 🔥 limpa
+                                            setSearch("");
+                                            setSuggestions([]);
                                             setShowSuggestions(false);
                                         }}
-                                        className="px-4 py-2 hover:bg-zinc-800 cursor-pointer text-sm"
+                                        className="
+                                            flex items-center gap-3
+                                            px-4 py-2 cursor-pointer
+                                            hover:bg-zinc-800
+                                            text-sm
+                                        "
                                     >
-                                        {p.name}
+                                        {/* 🖼️ IMAGEM */}
+                                        <img
+                                            src={p.imageUrl || "/placeholder.png"}
+                                            alt={p.name}
+                                            className="w-10 h-10 object-cover rounded-md border border-zinc-700"
+                                        />
+
+                                        {/* 📝 INFO */}
+                                        <div className="flex flex-col overflow-hidden">
+                                            <span className="truncate font-medium">
+                                                {p.name}
+                                            </span>
+
+                                            <span className="text-xs text-zinc-400 truncate">
+                                                {p.description?.slice(0, 50)}...
+                                            </span>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -243,11 +273,11 @@ export default function HeaderMobile() {
                 </>
             )}
 
+            {/* 🔝 SCROLL */}
             {showScrollTop && (
                 <button
                     onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                    className="fixed bottom-14 right-6 z-50 p-2 bg-white text-black rounded-md
-                    cursor-pointer"
+                    className="fixed bottom-14 right-6 z-50 p-2 bg-white text-black rounded-md cursor-pointer"
                 >
                     <ArrowUp size={20} />
                 </button>

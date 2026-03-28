@@ -76,7 +76,6 @@ export default function HeaderMedium() {
 
         navigate(`/pesquisa?q=${encodeURIComponent(search)}`);
 
-        // limpeza
         setSearch("");
         setSuggestions([]);
         setShowSuggestions(false);
@@ -138,20 +137,41 @@ export default function HeaderMedium() {
                                     absolute top-full left-0 w-full
                                     bg-black border border-zinc-700
                                     rounded-md mt-1 z-50
+                                    max-h-80 overflow-y-auto
                                 ">
                                     {suggestions.map((product) => (
                                         <div
                                             key={product.id}
                                             onClick={() => {
                                                 navigate(`/produto/${product.id}`);
-
                                                 setSearch("");
                                                 setSuggestions([]);
                                                 setShowSuggestions(false);
                                             }}
-                                            className="px-4 py-2 cursor-pointer hover:bg-zinc-800 text-sm"
+                                            className="
+                                                flex items-center gap-3
+                                                px-4 py-2 cursor-pointer
+                                                hover:bg-zinc-800
+                                                text-sm
+                                            "
                                         >
-                                            {product.name}
+                                            {/* 🖼️ IMAGEM */}
+                                            <img
+                                                src={product.imageUrl || "/placeholder.png"}
+                                                alt={product.name}
+                                                className="w-12 h-12 object-cover rounded-md border border-zinc-700"
+                                            />
+
+                                            {/* 📝 INFO */}
+                                            <div className="flex flex-col overflow-hidden">
+                                                <span className="font-medium truncate">
+                                                    {product.name}
+                                                </span>
+
+                                                <span className="text-xs text-zinc-400 truncate">
+                                                    {product.description?.slice(0, 60)}...
+                                                </span>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
