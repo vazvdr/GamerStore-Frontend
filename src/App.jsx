@@ -2,10 +2,10 @@ import { Routes, Route } from "react-router-dom";
 import StripeProvider from "./providers/StripeProvider";
 import Home from "../src/pages/Home";
 import Login from "../src/pages/Login";
-import HeaderWrapper from "./components/Header/HeaderWrapper";
+import HeaderWrapper from '../src/components/header/HeaderWrapper'
 import Produto from "./pages/Produto";
 import Carrinho from "./pages/Carrinho";
-import Footer from "./components/Footer";
+import Footer from '../src/components/Footer';
 import Categoria from "./pages/Categoria";
 import Conta from "../src/pages/Conta";
 import PrivateRoute from "../src/routes/PrivateRoutes";
