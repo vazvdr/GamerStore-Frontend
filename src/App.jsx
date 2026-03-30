@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import StripeProvider from "./providers/StripeProvider";
-import Home from "../src/pages/home";
+import Home from "../src/pages/Home";
 import Login from "../src/pages/Login";
 import HeaderWrapper from "./components/Header/HeaderWrapper";
 import Produto from "./pages/Produto";
