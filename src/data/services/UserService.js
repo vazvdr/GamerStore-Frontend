@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/usuarios";
+const API_URL = "https://userservice-gamerstore.up.railway.app/usuarios";
 
 export async function login(email, senha) {
     const response = await fetch(`${API_URL}/login`, {

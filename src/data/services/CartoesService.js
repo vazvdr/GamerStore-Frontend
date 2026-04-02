@@ -1,6 +1,6 @@
 import { getToken } from "../../utils/cookies";
 
-const BASE_URL = "http://localhost:8080/cartoes";
+const BASE_URL = "https://userservice-gamerstore.up.railway.app/cartoes";
 
 export async function criarCartao(data) {
     const token = getToken();

@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8082/cart";
+const API_URL = "https://cartservice-gamerstore.up.railway.app/cart";
 
 export async function syncCart(userId, items) {
 

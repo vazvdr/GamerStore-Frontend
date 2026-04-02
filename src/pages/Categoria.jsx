@@ -26,7 +26,7 @@ export default function Categoria() {
 
     if (loading) {
         return (
-            <p className="min-h-screen pt-28 text-center text-zinc-300">
+            <p className="min-h-screen pt-28 text-center text-zinc-300 bg-linear-to-r from-zinc-800 via-black to-zinc-800">
                 Carregando produtos...
             </p>
         );

@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8081/products";
+const API_URL = "https://productservice-gamerstore.up.railway.app/products";
 
 export const ProductService = {
     async getAll() {

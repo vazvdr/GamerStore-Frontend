@@ -1,6 +1,6 @@
 import { getToken } from "../../utils/cookies";
 
-const API_URL = "http://localhost:8080/enderecos";
+const API_URL = "https://userservice-gamerstore.up.railway.app/enderecos";
 
 export async function listarEnderecos() {
     const token = getToken();

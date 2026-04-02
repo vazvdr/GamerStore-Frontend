@@ -21,7 +21,7 @@ export default function Home() {
 
     if (error) {
         return (
-            <div className="flex justify-center items-center h-screen text-red-500">
+            <div className="flex justify-center items-center h-screen text-red-400 bg-linear-to-r from-zinc-800 via-black to-zinc-800">
                 {error}
             </div>
         );
