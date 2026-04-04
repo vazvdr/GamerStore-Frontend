@@ -93,7 +93,6 @@ export default function HeaderMobile() {
                             className="flex items-center gap-2 cursor-pointer"
                         >
                             <img src={Logo} className="h-14 object-contain" />
-                            <img src={LogoTexto} className="h-14 w-45 object-contain" />
                         </button>
 
                         <div className="flex items-center gap-1">
