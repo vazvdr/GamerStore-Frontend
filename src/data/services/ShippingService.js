@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8083/shipping";
+const API_URL = "https://shippingservice-gamerstore.up.railway.app/shipping";
 
 export async function calcularFretePorCep(cep) {
     const response = await fetch(`${API_URL}/calcular`, {

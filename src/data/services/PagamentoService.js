@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8084/payments";
+const API_URL = "https://paymentservice-gamerstore.up.railway.app/payments";
 
 export async function confirmarPagamento({
     userId,

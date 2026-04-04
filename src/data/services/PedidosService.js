@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8085/orders";
+const API_URL = "https://orderservice-gamerstore.up.railway.app/orders";
 
 export async function getOrdersByUser(userId, token) {
 
