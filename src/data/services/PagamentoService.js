@@ -2,6 +2,8 @@ const API_URL = "https://paymentservice-gamerstore.up.railway.app/payments";
 
 export async function confirmarPagamento({
     userId,
+    userEmail,
+    userName,
     amount,
     paymentMethodId,
     stripeCustomerId,
@@ -9,6 +11,8 @@ export async function confirmarPagamento({
 }) {
     const payload = {
         userId,
+        userEmail,
+        userName,
         amount,
         paymentMethodId,
         stripeCustomerId,

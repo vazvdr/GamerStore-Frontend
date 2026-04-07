@@ -223,8 +223,10 @@ export function usePagamento(user, cartItems) {
     try {
       await confirmarPagamento({
         userId: user.id,
-        amount: Number(backendTotal),
-        paymentMethodId: cartaoSelecionado,
+        userEmail: user.email,
+        userName: user.nome,
+        amount,
+        paymentMethodId,
         stripeCustomerId: user.stripeCustomerId,
         items
       });
