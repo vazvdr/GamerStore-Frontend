@@ -225,17 +225,12 @@ export function usePagamento(user, cartItems) {
         userId: user.id,
         userEmail: user.email,
         userName: user.nome,
-        amount,
-        paymentMethodId,
+        amount: Number(backendTotal),
+        paymentMethodId: cartaoSelecionado,
         stripeCustomerId: user.stripeCustomerId,
         items
       });
       clearCart();
-      setAlertDialog({
-        open: true,
-        title: "Pagamento aprovado 🎉",
-        description: "Seu pagamento foi realizado com sucesso!"
-      });
       sessionStorage.setItem("pagamento_aprovado", "true");
       setTimeout(() => {
         navigate("/pagamento-sucesso");
