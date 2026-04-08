@@ -62,6 +62,26 @@ export default function CartAddressForm({
           placeholder="Cidade"
         />
       </div>
+      <div className="flex items-center gap-4">
+        <input
+          name="estado"
+          value={enderecoForm.estado}
+          onChange={handleEnderecoChange}
+          className="w-1/2 px-3 py-2 rounded border bg-transparent text-white"
+          placeholder="Estado"
+        />
+
+        <label className="flex items-center gap-2 text-sm text-zinc-300">
+          <input
+            type="checkbox"
+            name="principal"
+            checked={enderecoForm.principal}
+            onChange={handleEnderecoChange}
+            className="accent-lime-400"
+          />
+          Endereço principal
+        </label>
+      </div>
 
       <button
         type="button"
