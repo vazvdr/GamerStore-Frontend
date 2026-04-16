@@ -2,7 +2,9 @@ const API_URL = "https://productservice-gamerstore.up.railway.app/products";
 
 export const ProductService = {
     async getAll() {
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL, {
+            cache: "force-cache",
+        });
         if (!response.ok) {
             throw new Error("Erro ao buscar produtos");
         }
@@ -10,7 +12,9 @@ export const ProductService = {
     },
 
     async getById(id) {
-        const response = await fetch(`${API_URL}/${id}`);
+        const response = await fetch(`${API_URL}/${id}`, {
+            cache: "force-cache"
+        });
         if (!response.ok) {
             throw new Error("Produto não encontrado");
         }
