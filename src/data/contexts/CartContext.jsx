@@ -38,7 +38,7 @@ export function CartProvider({ children }) {
         }));
     }
 
-    function calculateTotals(items, shipping = 0) {
+    function calculateTotals(items, shipping = null) {
 
         const subtotal = items.reduce(
             (sum, item) =>
@@ -49,15 +49,21 @@ export function CartProvider({ children }) {
             0
         );
 
+        const shippingValue =
+            shipping !== null
+                ? Number(shipping)
+                : Number(
+                    localStorage.getItem("cart_shipping") ?? 0
+                );
+
         setCartSubtotal(subtotal);
-        setCartShipping(Number(shipping ?? 0));
-        setCartTotal(
-            subtotal + Number(shipping ?? 0)
-        );
+        setCartShipping(shippingValue);
+        setCartTotal(subtotal + shippingValue);
     }
 
     function saveLocalCart(items) {
 
+        // 🔥 SALVA APENAS NO LOCALSTORAGE
         localStorage.setItem(
             "cart",
             JSON.stringify(items)
@@ -65,11 +71,7 @@ export function CartProvider({ children }) {
 
         setCartItems(mapLocalToState(items));
 
-        const savedShipping = Number(
-            localStorage.getItem("cart_shipping") ?? 0
-        );
-
-        calculateTotals(items, savedShipping);
+        calculateTotals(items);
     }
 
     function getLocalCart() {
@@ -108,9 +110,12 @@ export function CartProvider({ children }) {
 
             setLoadingCart(true);
 
+            // 🔥 SEMPRE CARREGA DO LOCALSTORAGE
             const items = getLocalCart();
 
-            saveLocalCart(items);
+            setCartItems(mapLocalToState(items));
+
+            calculateTotals(items);
 
         } catch (err) {
 
@@ -125,6 +130,7 @@ export function CartProvider({ children }) {
         }
     }
 
+    // 🔥 LOGIN NÃO SINCRONIZA NADA
     useEffect(() => {
         loadCart();
     }, []);
@@ -156,6 +162,7 @@ export function CartProvider({ children }) {
             });
         }
 
+        // 🔥 APENAS LOCALSTORAGE
         saveLocalCart(items);
     }
 
@@ -179,6 +186,7 @@ export function CartProvider({ children }) {
             return item;
         });
 
+        // 🔥 APENAS LOCALSTORAGE
         saveLocalCart(items);
     }
 
@@ -204,6 +212,7 @@ export function CartProvider({ children }) {
             })
             .filter(Boolean);
 
+        // 🔥 APENAS LOCALSTORAGE
         saveLocalCart(items);
     }
 
@@ -215,11 +224,13 @@ export function CartProvider({ children }) {
             item => item.productId !== productId
         );
 
+        // 🔥 APENAS LOCALSTORAGE
         saveLocalCart(items);
     }
 
     async function clearCart() {
 
+        // 🔥 LIMPA LOCALSTORAGE
         localStorage.removeItem("cart");
         localStorage.removeItem("cart_shipping");
 
@@ -228,13 +239,22 @@ export function CartProvider({ children }) {
         setCartShipping(0);
         setCartTotal(0);
 
-        // 🔥 limpa backend apenas se estiver logado
+        // 🔥 BACKEND LIMPA APENAS SE JÁ EXISTIR
+        // 🔥 UM CARRINHO SINCRONIZADO
         if (user?.id) {
-            await clearCartRequest(user.id);
+
+            try {
+                await clearCartRequest(user.id);
+            } catch (err) {
+                console.error(
+                    "Erro ao limpar carrinho backend:",
+                    err
+                );
+            }
         }
     }
 
-    // 🔥 ÚNICO ponto que sincroniza com backend
+    // 🔥 ÚNICO PONTO QUE ESCREVE NO REDIS
     async function syncCartBeforeCheckout() {
 
         if (!user?.id) return;
@@ -248,10 +268,10 @@ export function CartProvider({ children }) {
                 quantity: item.quantity
             }));
 
-            // 🔥 sincroniza carrinho com Redis
+            // 🔥 AGORA SIM ESCREVE NO REDIS
             await syncCart(user.id, mapped);
 
-            // 🔥 pega carrinho atualizado
+            // 🔥 BUSCA CARRINHO CONSOLIDADO
             const data = await getCart(user.id);
 
             const subtotal = Number(
@@ -270,13 +290,15 @@ export function CartProvider({ children }) {
             setCartShipping(shipping);
             setCartTotal(total);
 
-            // 🔥 salva frete localmente
+            // 🔥 ATUALIZA FRETE LOCALMENTE
             localStorage.setItem(
                 "cart_shipping",
                 String(shipping)
             );
 
-            // 🔥 atualiza frontend sem quebrar estrutura
+            // 🔥 NÃO LIMPA LOCALSTORAGE
+            // 🔥 APENAS MANTÉM ELE SINCRONIZADO
+
             const backendItems = (data?.items ?? []).map(item => ({
                 productId: item.productId,
                 quantity: Number(item.quantidade ?? 0),
@@ -287,7 +309,6 @@ export function CartProvider({ children }) {
                 stock: Number(item.estoque ?? 0)
             }));
 
-            // 🔥 mantém frontend sincronizado
             localStorage.setItem(
                 "cart",
                 JSON.stringify(backendItems)
