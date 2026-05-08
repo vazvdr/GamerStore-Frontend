@@ -3,8 +3,7 @@ import { useAuth } from "./AuthContext";
 
 import {
     syncCart,
-    clearCart as clearCartRequest,
-    getCart
+    clearCart as clearCartRequest
 } from "../services/CartService";
 
 const CartContext = createContext();
@@ -38,7 +37,7 @@ export function CartProvider({ children }) {
         }));
     }
 
-    function calculateTotals(items, shipping = null) {
+    function calculateTotals(items) {
 
         const subtotal = items.reduce(
             (sum, item) =>
@@ -49,21 +48,18 @@ export function CartProvider({ children }) {
             0
         );
 
-        const shippingValue =
-            shipping !== null
-                ? Number(shipping)
-                : Number(
-                    localStorage.getItem("cart_shipping") ?? 0
-                );
+        const shipping = Number(
+            localStorage.getItem("cart_shipping") ?? 0
+        );
 
         setCartSubtotal(subtotal);
-        setCartShipping(shippingValue);
-        setCartTotal(subtotal + shippingValue);
+        setCartShipping(shipping);
+        setCartTotal(subtotal + shipping);
     }
 
     function saveLocalCart(items) {
 
-        // 🔥 SALVA APENAS NO LOCALSTORAGE
+        // 🔥 SEMPRE SALVA NO LOCALSTORAGE
         localStorage.setItem(
             "cart",
             JSON.stringify(items)
@@ -85,6 +81,7 @@ export function CartProvider({ children }) {
 
     function saveShipping(shippingValue) {
 
+        // 🔥 FRETE FICA NO FRONT
         localStorage.setItem(
             "cart_shipping",
             String(shippingValue)
@@ -92,7 +89,7 @@ export function CartProvider({ children }) {
 
         const items = getLocalCart();
 
-        calculateTotals(items, shippingValue);
+        calculateTotals(items);
     }
 
     function clearShipping() {
@@ -101,7 +98,7 @@ export function CartProvider({ children }) {
 
         const items = getLocalCart();
 
-        calculateTotals(items, 0);
+        calculateTotals(items);
     }
 
     async function loadCart() {
@@ -130,7 +127,7 @@ export function CartProvider({ children }) {
         }
     }
 
-    // 🔥 LOGIN NÃO SINCRONIZA NADA
+    // 🔥 NÃO SINCRONIZA NO LOGIN
     useEffect(() => {
         loadCart();
     }, []);
@@ -170,21 +167,15 @@ export function CartProvider({ children }) {
 
         let items = getLocalCart();
 
-        items = items.map(item => {
+        const item = items.find(
+            item => item.productId === productId
+        );
 
-            if (
-                item.productId === productId &&
-                item.quantity < item.stock
-            ) {
+        if (!item) return;
 
-                return {
-                    ...item,
-                    quantity: item.quantity + 1
-                };
-            }
-
-            return item;
-        });
+        if (item.quantity < item.stock) {
+            item.quantity += 1;
+        }
 
         // 🔥 APENAS LOCALSTORAGE
         saveLocalCart(items);
@@ -194,23 +185,22 @@ export function CartProvider({ children }) {
 
         let items = getLocalCart();
 
-        items = items
-            .map(item => {
+        const item = items.find(
+            item => item.productId === productId
+        );
 
-                if (item.productId !== productId) {
-                    return item;
-                }
+        if (!item) return;
 
-                if (item.quantity <= 1) {
-                    return null;
-                }
+        if (item.quantity <= 1) {
 
-                return {
-                    ...item,
-                    quantity: item.quantity - 1
-                };
-            })
-            .filter(Boolean);
+            items = items.filter(
+                item => item.productId !== productId
+            );
+
+        } else {
+
+            item.quantity -= 1;
+        }
 
         // 🔥 APENAS LOCALSTORAGE
         saveLocalCart(items);
@@ -239,15 +229,16 @@ export function CartProvider({ children }) {
         setCartShipping(0);
         setCartTotal(0);
 
-        // 🔥 BACKEND LIMPA APENAS SE JÁ EXISTIR
-        // 🔥 UM CARRINHO SINCRONIZADO
+        // 🔥 OPCIONAL:
+        // limpa backend APENAS se já existir
+        // carrinho sincronizado anteriormente
         if (user?.id) {
 
             try {
                 await clearCartRequest(user.id);
             } catch (err) {
                 console.error(
-                    "Erro ao limpar carrinho backend:",
+                    "Erro ao limpar backend:",
                     err
                 );
             }
@@ -268,53 +259,8 @@ export function CartProvider({ children }) {
                 quantity: item.quantity
             }));
 
-            // 🔥 AGORA SIM ESCREVE NO REDIS
+            // 🔥 AGORA SIM SALVA NO BACKEND
             await syncCart(user.id, mapped);
-
-            // 🔥 BUSCA CARRINHO CONSOLIDADO
-            const data = await getCart(user.id);
-
-            const subtotal = Number(
-                data?.subTotal ?? 0
-            );
-
-            const shipping = Number(
-                data?.shippingValue ?? 0
-            );
-
-            const total = Number(
-                data?.total ?? subtotal + shipping
-            );
-
-            setCartSubtotal(subtotal);
-            setCartShipping(shipping);
-            setCartTotal(total);
-
-            // 🔥 ATUALIZA FRETE LOCALMENTE
-            localStorage.setItem(
-                "cart_shipping",
-                String(shipping)
-            );
-
-            // 🔥 NÃO LIMPA LOCALSTORAGE
-            // 🔥 APENAS MANTÉM ELE SINCRONIZADO
-
-            const backendItems = (data?.items ?? []).map(item => ({
-                productId: item.productId,
-                quantity: Number(item.quantidade ?? 0),
-                nome: item.nome,
-                descricao: item.descricao,
-                preco: Number(item.preco ?? 0),
-                imageUrl: item.imageUrl,
-                stock: Number(item.estoque ?? 0)
-            }));
-
-            localStorage.setItem(
-                "cart",
-                JSON.stringify(backendItems)
-            );
-
-            setCartItems(mapLocalToState(backendItems));
 
         } catch (err) {
 
