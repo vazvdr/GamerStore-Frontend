@@ -3,6 +3,11 @@ import { useAuth } from "./AuthContext";
 
 import {
     syncCart,
+    addItemToCart,
+    removeItemFromCart,
+    increaseItemQuantity,
+    decreaseItemQuantity,
+    clearCart as clearCartRequest,
     getCart
 } from "../services/CartService";
 
@@ -11,6 +16,8 @@ const CartContext = createContext();
 export function CartProvider({ children }) {
 
     const { user } = useAuth();
+
+    const [hasSynced, setHasSynced] = useState(false);
 
     const [cartItems, setCartItems] = useState([]);
     const [cartSubtotal, setCartSubtotal] = useState(0);
@@ -25,267 +32,226 @@ export function CartProvider({ children }) {
     );
 
     function mapLocalToState(items) {
-
         return items.map(item => ({
             id: item.productId,
             nome: item.nome,
             descricao: item.descricao,
             preco: Number(item.preco ?? 0),
-            quantidade: Number(item.quantity ?? 0),
+            quantidade: item.quantity,
             imageUrl: item.imageUrl,
-            stock: Number(item.stock ?? 0)
+            stock: item.stock
         }));
     }
 
-    function calculateTotals(items, shipping = 0) {
+    function saveLocalCart(items) {
+        localStorage.setItem("cart", JSON.stringify(items));
+        setCartItems(mapLocalToState(items));
 
         const subtotal = items.reduce(
-            (sum, item) =>
-                sum + (
-                    Number(item.preco ?? 0) *
-                    Number(item.quantity ?? 0)
-                ),
+            (sum, item) => sum + (Number(item.preco ?? 0) * item.quantity),
             0
         );
 
-        const shippingValue = Number(shipping ?? 0);
-
         setCartSubtotal(subtotal);
-        setCartShipping(shippingValue);
-        setCartTotal(subtotal + shippingValue);
-    }
-
-    function saveLocalCart(items, shipping = null) {
-
-        const currentShipping =
-            shipping !== null
-                ? shipping
-                : Number(localStorage.getItem("cart_shipping") ?? 0);
-
-        localStorage.setItem(
-            "cart",
-            JSON.stringify(items)
-        );
-
-        setCartItems(mapLocalToState(items));
-
-        calculateTotals(items, currentShipping);
+        setCartShipping(0);
+        setCartTotal(subtotal);
     }
 
     function getLocalCart() {
-
         const localCart = localStorage.getItem("cart");
-
-        return localCart
-            ? JSON.parse(localCart)
-            : [];
+        return localCart ? JSON.parse(localCart) : [];
     }
 
-    function saveShipping(shippingValue) {
-
-        localStorage.setItem(
-            "cart_shipping",
-            String(shippingValue)
-        );
-
-        const items = getLocalCart();
-
-        calculateTotals(items, shippingValue);
-    }
-
-    function clearShipping() {
-
-        localStorage.removeItem("cart_shipping");
-
-        const items = getLocalCart();
-
-        calculateTotals(items, 0);
-    }
-
-    async function loadCart() {
-
-        try {
-
-            setLoadingCart(true);
-
-            const items = getLocalCart();
-
-            saveLocalCart(items);
-
-        } catch (err) {
-
-            console.error(
-                "Erro ao carregar carrinho:",
-                err
-            );
-
-        } finally {
-
-            setLoadingCart(false);
-        }
-    }
-
-    useEffect(() => {
-        loadCart();
-    }, []);
-
-    async function addToCart(product) {
-
-        let items = getLocalCart();
-
-        const existing = items.find(
-            item => item.productId === product.id
-        );
-
-        if (existing) {
-
-            if (existing.quantity < existing.stock) {
-                existing.quantity += 1;
-            }
-
-        } else {
-
-            items.push({
-                productId: product.id,
-                quantity: 1,
-                nome: product.name,
-                descricao: product.description,
-                preco: Number(product.price ?? 0),
-                imageUrl: product.imageUrl,
-                stock: Number(product.stock ?? 0)
-            });
-        }
-
-        saveLocalCart(items);
-    }
-
-    async function increaseQuantity(productId) {
-
-        const items = getLocalCart();
-
-        const updatedItems = items.map(item => {
-
-            if (
-                item.productId === productId &&
-                item.quantity < item.stock
-            ) {
-
-                return {
-                    ...item,
-                    quantity: item.quantity + 1
-                };
-            }
-
-            return item;
-        });
-
-        saveLocalCart(updatedItems);
-    }
-
-    async function decreaseQuantity(productId) {
-
-        const items = getLocalCart();
-
-        const updatedItems = items
-            .map(item => {
-
-                if (item.productId !== productId) {
-                    return item;
-                }
-
-                if (item.quantity <= 1) {
-                    return null;
-                }
-
-                return {
-                    ...item,
-                    quantity: item.quantity - 1
-                };
-            })
-            .filter(Boolean);
-
-        saveLocalCart(updatedItems);
-    }
-
-    async function removeFromCart(productId) {
-
-        const items = getLocalCart();
-
-        const updatedItems = items.filter(
-            item => item.productId !== productId
-        );
-
-        saveLocalCart(updatedItems);
-    }
-
-    async function clearCart() {
-
-        localStorage.removeItem("cart");
-        localStorage.removeItem("cart_shipping");
-
-        setCartItems([]);
-        setCartSubtotal(0);
-        setCartShipping(0);
-        setCartTotal(0);
-    }
-
-    async function syncCartBeforeCheckout() {
-
-        // 🔥 deslogado não sincroniza
+    async function syncLocalCartWithBackend() {
         if (!user?.id) return;
 
+        const items = getLocalCart();
+
+        if (!items.length) return;
+
         try {
-
-            const items = getLocalCart();
-
             const mapped = items.map(item => ({
                 productId: item.productId,
                 quantity: item.quantity
             }));
 
-            // 🔥 UMA ÚNICA escrita no Redis
             await syncCart(user.id, mapped);
 
-            // 🔥 pega carrinho atualizado com frete
+            localStorage.removeItem("cart");
+
+        } catch (err) {
+            console.error("Erro ao sincronizar carrinho:", err);
+        }
+    }
+
+
+    async function loadCart() {
+
+        if (!user?.id) {
+            const items = getLocalCart();
+            saveLocalCart(items);
+            setLoadingCart(false);
+            return;
+        }
+
+        try {
+            setLoadingCart(true);
+
             const data = await getCart(user.id);
 
-            const backendShipping = Number(
-                data?.shippingValue ?? 0
-            );
-
-            // 🔥 salva frete localmente
-            saveShipping(backendShipping);
-
-            // 🔥 atualiza UI usando backend
-            const backendItems = (data?.items ?? []).map(item => ({
-                id: item.productId,
-                nome: item.nome,
-                descricao: item.descricao,
-                preco: Number(item.preco ?? 0),
-                quantidade: Number(item.quantidade ?? 0),
-                imageUrl: item.imageUrl,
-                stock: Number(item.estoque ?? 0)
-            }));
-
-            setCartItems(backendItems);
-
-            const subtotal = Number(
-                data?.subTotal ?? 0
-            );
+            const subtotal = Number(data?.subTotal ?? 0);
+            const shipping = Number(data?.shippingValue ?? 0);
+            const total = Number(data?.total ?? subtotal + shipping);
 
             setCartSubtotal(subtotal);
-            setCartShipping(backendShipping);
-            setCartTotal(
-                subtotal + backendShipping
+            setCartShipping(shipping);
+            setCartTotal(total);
+
+            setCartItems(
+                (data?.items ?? []).map(item => ({
+                    id: item.productId,
+                    nome: item.nome,
+                    descricao: item.descricao,
+                    preco: Number(item.preco ?? 0),
+                    quantidade: Number(item.quantidade ?? 0),
+                    imageUrl: item.imageUrl,
+                    stock: Number(item.estoque ?? 0)
+                }))
             );
 
         } catch (err) {
-
-            console.error(
-                "Erro ao sincronizar carrinho:",
-                err
-            );
+            console.error("Erro ao buscar carrinho:", err);
+        } finally {
+            setLoadingCart(false);
         }
+    }
+
+    useEffect(() => {
+        async function initCart() {
+
+            if (!user?.id) {
+                setHasSynced(false);
+                await loadCart();
+                return;
+            }
+
+            if (!hasSynced) {
+                await syncLocalCartWithBackend();
+                setHasSynced(true);
+            }
+
+            await loadCart();
+        }
+
+        initCart();
+    }, [user]);
+
+    async function addToCart(product) {
+
+        // 🟡 DESLOGADO
+        if (!user?.id) {
+
+            let items = getLocalCart();
+
+            const existing = items.find(i => i.productId === product.id);
+
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                items.push({
+                    productId: product.id,
+                    quantity: 1,
+                    nome: product.name,
+                    descricao: product.description,
+                    preco: Number(product.price ?? 0),
+                    imageUrl: product.imageUrl,
+                    stock: Number(product.stock ?? 0)
+                });
+            }
+
+            saveLocalCart(items);
+            return;
+        }
+
+        // 🟢 LOGADO
+        await addItemToCart(user.id, product.id);
+        loadCart();
+    }
+
+    async function increaseQuantity(productId) {
+
+        if (!user?.id) {
+
+            let items = getLocalCart();
+
+            const item = items.find(i => i.productId === productId);
+            if (!item) return;
+
+            if (item.quantity < item.stock) {
+                item.quantity += 1;
+            }
+
+            saveLocalCart(items);
+            return;
+        }
+
+        await increaseItemQuantity(user.id, productId);
+        loadCart();
+    }
+
+    async function decreaseQuantity(productId) {
+
+        if (!user?.id) {
+
+            let items = getLocalCart();
+
+            const item = items.find(i => i.productId === productId);
+            if (!item) return;
+
+            if (item.quantity <= 1) {
+                items = items.filter(i => i.productId !== productId);
+            } else {
+                item.quantity -= 1;
+            }
+
+            saveLocalCart(items);
+            return;
+        }
+
+        await decreaseItemQuantity(user.id, productId);
+        loadCart();
+    }
+
+    async function removeFromCart(productId) {
+
+        if (!user?.id) {
+
+            let items = getLocalCart();
+            items = items.filter(i => i.productId !== productId);
+
+            saveLocalCart(items);
+            return;
+        }
+
+        await removeItemFromCart(user.id, productId);
+        loadCart();
+    }
+
+    async function clearCart() {
+
+        if (!user?.id) {
+
+            localStorage.removeItem("cart");
+            saveLocalCart([]);
+            return;
+        }
+
+        await clearCartRequest(user.id);
+
+        setCartItems([]);
+        setCartSubtotal(0);
+        setCartShipping(0);
+        setCartTotal(0);
     }
 
     return (
@@ -302,10 +268,7 @@ export function CartProvider({ children }) {
                 removeFromCart,
                 increaseQuantity,
                 decreaseQuantity,
-                clearCart,
-                saveShipping,
-                clearShipping,
-                syncCartBeforeCheckout
+                clearCart
             }}
         >
             {children}
