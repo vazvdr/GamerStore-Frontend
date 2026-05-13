@@ -1,6 +1,12 @@
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+
 import { useProducts } from "../data/hooks/useProducts.js";
 import { useCart } from "../data/contexts/CartContext.jsx";
+
+import {
+    registerProductView,
+} from "../data/services/SugestoesService";
 
 export default function Produto() {
     const { id } = useParams();
@@ -13,6 +19,14 @@ export default function Produto() {
     } = useProducts({ id });
 
     const { addToCart, cartItems } = useCart();
+
+    // 🔥 REGISTRA VISUALIZAÇÃO DO PRODUTO
+    useEffect(() => {
+        if (!product?.id) return;
+
+        registerProductView(product.id);
+
+    }, [product]);
 
     if (loading) {
         return (
@@ -78,6 +92,7 @@ export default function Produto() {
                         <span>
                             Marca: <strong>{product.brand}</strong>
                         </span>
+
                         <span>
                             Modelo: <strong>{product.model}</strong>
                         </span>
@@ -126,7 +141,10 @@ export default function Produto() {
                                 className="flex justify-between border-b border-zinc-700 pb-1"
                             >
                                 <span>{key}</span>
-                                <span className="text-zinc-400">{value}</span>
+
+                                <span className="text-zinc-400">
+                                    {value}
+                                </span>
                             </li>
                         ))}
                     </ul>

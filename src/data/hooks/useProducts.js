@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { ProductService } from "../services/ProductService";
+
+import { ProductService }
+    from "../services/ProductService";
 
 // Normaliza texto
-function normalizeText(text) {
+function normalizeText(text = "") {
+
     return text
         .toLowerCase()
         .normalize("NFD")
@@ -14,7 +17,11 @@ function normalizeText(text) {
 const categoryMap = {
     "notebooks": ["notebook"],
     "processadores": ["processador"],
-    "perifericos": ["teclado", "mouse", "headset"],
+    "perifericos": [
+        "teclado",
+        "mouse",
+        "headset"
+    ],
     "audio": ["headset"],
     "monitores": ["monitor"],
     "placas de video": ["placa de video"],
@@ -23,56 +30,153 @@ const categoryMap = {
     "video games": ["console"]
 };
 
-export function useProducts({ id = null, search = null, isSearch = false } = {}) {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+export function useProducts({
+    id = null,
+    search = null,
+    isSearch = false,
+    page = 0,
+    size = 8
+} = {}) {
+
+    const [data, setData] =
+        useState(null);
+
+    const [totalPages, setTotalPages] =
+        useState(0);
+
+    const [loading, setLoading] =
+        useState(true);
+
+    const [error, setError] =
+        useState(null);
 
     useEffect(() => {
+
         let isMounted = true;
 
         async function fetchProducts() {
+
             try {
+
                 setLoading(true);
                 setError(null);
 
                 let result;
 
                 if (id) {
-                    result = await ProductService.getById(id);
+
+                    result =
+                        await ProductService
+                            .getById(id);
 
                     if (Array.isArray(result)) {
-                        result = result[0] || null;
+                        result =
+                            result[0] || null;
                     }
 
-                } else if (search && isSearch) {
-                    result = await ProductService.search(search);
+                    if (isMounted) {
+                        setData(result);
+                    }
 
+                } else if (
+                    search &&
+                    isSearch
+                ) {
+
+                    result =
+                        await ProductService
+                            .search(search);
+
+                    if (isMounted) {
+                        setData(result);
+                    }
+
+                    // =========================
+                    // LISTAGEM COM PAGINAÇÃO
+                    // NO FRONTEND
+                    // =========================
                 } else {
-                    const allProducts = await ProductService.getAll();
+
+                    // Backend agora retorna ARRAY
+                    const response =
+                        await ProductService
+                            .getAll();
+
+                    result = Array.isArray(response)
+                        ? response
+                        : [];
 
                     if (search) {
-                        const normalizedSearch = normalizeText(search);
+
+                        const normalizedSearch =
+                            normalizeText(search);
 
                         const tagsToSearch =
-                            categoryMap[normalizedSearch] || [normalizedSearch];
+                            categoryMap[
+                            normalizedSearch
+                            ] || [
+                                normalizedSearch
+                            ];
 
-                        result = allProducts.filter(product => {
-                            const productTag = normalizeText(product.tags || "");
-                            return tagsToSearch.some(tag =>
-                                productTag === normalizeText(tag)
-                            );
-                        });
-                    } else {
-                        result = allProducts;
+                        result = result.filter(
+                            product => {
+
+                                const productTag =
+                                    normalizeText(
+                                        product.tags || ""
+                                    );
+
+                                return tagsToSearch.some(
+                                    tag =>
+                                        productTag ===
+                                        normalizeText(tag)
+                                );
+                            }
+                        );
+                    }
+
+                    const startIndex =
+                        page * size;
+
+                    const endIndex =
+                        startIndex + size;
+
+                    const paginatedProducts =
+                        result.slice(
+                            startIndex,
+                            endIndex
+                        );
+
+                    if (isMounted) {
+
+                        setData(
+                            paginatedProducts
+                        );
+
+                        setTotalPages(
+                            Math.ceil(
+                                result.length / size
+                            )
+                        );
                     }
                 }
 
-                if (isMounted) setData(result);
             } catch (err) {
-                if (isMounted) setError(err.message);
+
+                console.error(
+                    "Erro no useProducts:",
+                    err
+                );
+
+                if (isMounted) {
+                    setError(err.message);
+                }
+
             } finally {
-                if (isMounted) setLoading(false);
+
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         }
 
@@ -81,7 +185,19 @@ export function useProducts({ id = null, search = null, isSearch = false } = {})
         return () => {
             isMounted = false;
         };
-    }, [id, search, isSearch]);
 
-    return { data, loading, error };
+    }, [
+        id,
+        search,
+        isSearch,
+        page,
+        size
+    ]);
+
+    return {
+        data,
+        totalPages,
+        loading,
+        error
+    };
 }

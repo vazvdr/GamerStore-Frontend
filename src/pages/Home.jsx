@@ -1,13 +1,38 @@
-import ProductCard from '../components/ProductCard';
-import { useProducts } from '../data/hooks/useProducts';
-import { HoverEffect } from '../components/ui/card-hover-effect';
-import Carousel from '../components/Carousel';
+import { useState } from "react";
 
-import banner2 from '../assets/banner2.png';
-import banner3 from '../assets/banner3.png';
+import Carousel from "../components/Carousel";
+
+import FeaturedProducts from "../components/home/FeaturedProducts";
+import Pagination from "../components/home/Pagination";
+import SuggestedProducts from "../components/home/SuggestedProducts";
+
+import { useProducts } from "../data/hooks/useProducts";
+import { useSugestoes } from "../data/hooks/useSugestoes";
+
+import banner2 from "../assets/banner2.png";
+import banner3 from "../assets/banner3.png";
 
 export default function Home() {
-    const { data: products, loading, error } = useProducts();
+
+    const [currentPage, setCurrentPage] =
+        useState(1);
+
+    const PRODUCTS_PER_PAGE = 8;
+
+    const {
+        data: products,
+        totalPages,
+        loading,
+        error
+    } = useProducts({
+        page: currentPage - 1,
+        size: PRODUCTS_PER_PAGE
+    });
+
+    const {
+        suggestedProducts,
+        loadingSuggestions,
+    } = useSugestoes(products);
 
     const banners = [banner2, banner3];
 
@@ -28,15 +53,15 @@ export default function Home() {
     }
 
     return (
-        <main className="
-            pt-24 md:pt-28 lg:pt-30 xl:pt-22
-            pb-20
-            min-h-screen
-            bg-linear-to-r from-zinc-800 via-black to-zinc-800
-            px-4 md:px-6
-        ">
-
-            {/* CARROSSEL */}
+        <main
+            className="
+                pt-24 md:pt-28 lg:pt-30 xl:pt-22
+                pb-20
+                min-h-screen
+                bg-linear-to-r from-zinc-800 via-black to-zinc-800
+                px-4 md:px-6
+            "
+        >
             <div className="mb-4 mt-16 md:mb-8 relative overflow-hidden">
                 <Carousel
                     images={banners}
@@ -45,31 +70,19 @@ export default function Home() {
                 />
             </div>
 
-            {/* TÍTULO */}
-            <div className="flex justify-center mb-4 md:mb-8">
-                <h2 className="
-                    text-2xl sm:text-3xl md:text-4xl
-                    font-extrabold
-                    bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400
-                    bg-clip-text text-transparent
-                    tracking-wide
-                    text-center
-                    transition-all duration-500 ease-in-out
-                    hover:bg-none
-                    hover:text-zinc-300
-                    hover:drop-shadow-[0_0_20px_rgba(212,212,216,0.8)]
-                    cursor-default
-                ">
-                    Produtos em destaque
-                </h2>
-            </div>
+            <FeaturedProducts
+                products={products}
+            />
 
-            {/* PRODUTOS */}
-            <HoverEffect
-                items={products}
-                renderItem={(product) => (
-                    <ProductCard key={product.id} product={product} />
-                )}
+            <Pagination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+            />
+
+            <SuggestedProducts
+                products={suggestedProducts}
+                loading={loadingSuggestions}
             />
         </main>
     );
