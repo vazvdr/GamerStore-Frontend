@@ -4,6 +4,15 @@ export default function SuggestedProducts({
     products,
     loading,
 }) {
+
+    if (
+        loading ||
+        !products ||
+        products.length === 0
+    ) {
+        return null;
+    }
+
     return (
         <section className="mt-20">
             <div className="flex justify-center mb-8">
@@ -25,45 +34,35 @@ export default function SuggestedProducts({
                 </h2>
             </div>
 
-            {loading ? (
-                <div className="text-center text-zinc-400">
-                    Carregando sugestões...
-                </div>
-            ) : products.length === 0 ? (
-                <div className="text-center text-zinc-500">
-                    Nenhuma sugestão encontrada.
-                </div>
-            ) : (
-                <div
-                    className="
-                        grid
-                        grid-cols-1
-                        sm:grid-cols-2
-                        lg:grid-cols-4
-                        gap-6
-                    "
-                >
-                    {products.map((product) => (
-                        <div
-                            key={product.id}
-                            className="
-                                bg-zinc-900/70
-                                border border-zinc-800
-                                rounded-3xl
-                                backdrop-blur-md
-                                transition-all duration-300
-                                hover:border-cyan-400
-                                hover:shadow-[0_0_30px_rgba(34,211,238,0.25)]
-                                hover:-translate-y-1
-                            "
-                        >
-                            <ProductCard
-                                product={product}
-                            />
-                        </div>
-                    ))}
-                </div>
-            )}
+            <div
+                className="
+                    grid
+                    grid-cols-1
+                    sm:grid-cols-2
+                    lg:grid-cols-4
+                    gap-6
+                "
+            >
+                {products.map((product) => (
+                    <div
+                        key={product.id}
+                        className="
+                            bg-zinc-900/70
+                            border border-zinc-800
+                            rounded-3xl
+                            backdrop-blur-md
+                            transition-all duration-300
+                            hover:border-cyan-400
+                            hover:shadow-[0_0_30px_rgba(34,211,238,0.25)]
+                            hover:-translate-y-1
+                        "
+                    >
+                        <ProductCard
+                            product={product}
+                        />
+                    </div>
+                ))}
+            </div>
         </section>
     );
 }
